@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Andrew Perez — 2026 Pipeline</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #faf9f7;
+    --surface: #ffffff;
+    --surface2: #f4f2ee;
+    --border: rgba(0,0,0,0.08);
+    --border-strong: rgba(0,0,0,0.15);
+    --text: #1a1917;
+    --text-muted: #6b6760;
+    --text-faint: #a09d98;
+    --accent: #c8602a;
+    --accent-light: #f5ebe4;
+    --blue: #2563a8;
+    --blue-light: #e8f0f9;
+    --green: #1d7a4e;
+    --green-light: #e4f3eb;
+    --amber: #b06b10;
+    --amber-light: #fdf0e0;
+    --purple: #5b3fa8;
+    --purple-light: #eeebf8;
+    --pink: #a03060;
+    --pink-light: #f7e8ef;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+    --radius: 10px;
+    --radius-lg: 14px;
+  }
+
+  body {
+    background: var(--bg);
+    font-family: var(--font-body);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1.25rem 2rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 1rem;
+  }
+  .brand {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .brand em { color: var(--accent); font-style: italic; }
+  .meta { font-size: 12px; color: var(--text-faint); }
+
+  .tabs {
+    display: flex;
+    gap: 0;
+  }
+  .tab {
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 18px;
+    cursor: pointer;
+    color: var(--text-muted);
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    user-select: none;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* LAYOUT */
+  .section { padding: 1.75rem 2rem; display: none; }
+  .section.active { display: block; }
+
+  /* STAT CARDS */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    margin-bottom: 1.75rem;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+  }
+  .stat-label {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-faint);
+    margin-bottom: 6px;
+  }
+  .stat-value {
+    font-family: var(--font-display);
+    font-size: 30px;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1;
+  }
+  .stat-sub { font-size: 11px; color: var(--text-faint); margin-top: 4px; }
+  .stat.accent .stat-value { color: var(--accent); }
+
+  /* PIPELINE BARS */
+  .section-label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-faint);
+    margin-bottom: 0.75rem;
+  }
+  .pipeline-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1.75rem;
+    flex-wrap: wrap;
+  }
+  .stage { min-width: 80px; flex: 1; }
+  .stage-name { font-size: 11px; color: var(--text-muted); margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-wrap { background: var(--surface2); border-radius: 3px; height: 5px; }
+  .bar-fill { height: 5px; border-radius: 3px; transition: width 0.4s ease; }
+  .stage-count { font-size: 15px; font-weight: 500; color: var(--text); margin-top: 5px; }
+
+  /* TABLE */
+  .table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    background: var(--surface2);
+    text-align: left;
+    padding: 9px 14px;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg); }
+
+  /* BADGES */
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 9px;
+    border-radius: 20px;
+  }
+  .b-buyer { background: var(--blue-light); color: var(--blue); }
+  .b-seller { background: var(--accent-light); color: var(--accent); }
+  .b-lead { background: var(--amber-light); color: var(--amber); }
+  .b-nurture { background: var(--amber-light); color: var(--amber); }
+  .b-buyers { background: var(--blue-light); color: var(--blue); }
+  .b-prelist { background: var(--pink-light); color: var(--pink); }
+  .b-listings { background: var(--green-light); color: var(--green); }
+  .b-escrow { background: var(--purple-light); color: var(--purple); }
+
+  /* SOURCE DOT */
+  .src { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-muted); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+  /* BUTTON */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 7px 16px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn:hover { background: var(--surface2); }
+  .btn.primary { background: var(--accent); color: white; border-color: var(--accent); }
+  .btn.primary:hover { background: #b05522; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem;
+    width: 90%;
+    max-width: 480px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  }
+  .modal h3 { font-family: var(--font-display); font-size: 20px; font-weight: 400; margin-bottom: 1.25rem; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group.full { grid-column: 1 / -1; }
+  label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-faint); }
+  input, select {
+    font-family: var(--font-body);
+    font-size: 13px;
+    padding: 8px 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+  }
+  input:focus, select:focus { border-color: var(--accent); }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.25rem; }
+
+  /* EMPTY */
+  .empty { text-align: center; padding: 3rem; color: var(--text-faint); font-size: 14px; }
+
+  @media (max-width: 640px) {
+    .header { padding: 1rem 1rem 0; }
+    .section { padding: 1.25rem 1rem; }
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    th:nth-child(n+4), td:nth-child(n+4) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="brand">Andrew Perez — <em>2026 Pipeline</em></div>
+    <div class="meta" id="live-date"></div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('pipeline')">Pipeline</div>
+    <div class="tab" onclick="showTab('clients')">Clients</div>
+    <div class="tab" onclick="showTab('closings')">Closings</div>
+  </div>
+</div>
+
+<!-- PIPELINE TAB -->
+<div id="tab-pipeline" class="section active">
+  <div class="stat-grid" id="stat-grid"></div>
+  <div class="section-label">Pipeline distribution · <span id="total-label">0</span> active</div>
+  <div class="pipeline-bar" id="pipeline-bars"></div>
+  <div class="table-header">
+    <div class="section-label" style="margin:0">Active clients</div>
+    <button class="btn primary" onclick="openModal()">+ Add client</button>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>Client</th><th>Property</th><th>Type</th><th>Stage</th><th>Source</th><th>Next action</th>
+      </tr></thead>
+      <tbody id="client-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- CLIENTS TAB -->
+<div id="tab-clients" class="section">
+  <div class="table-header">
+    <div class="section-label" style="margin:0">All contacts · <span id="all-count">0</span></div>
+    <button class="btn primary" onclick="openModal()">+ Add client</button>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>Client</th><th>Phone</th><th>Type</th><th>Stage</th><th>Source</th><th>Added</th>
+      </tr></thead>
+      <tbody id="all-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- CLOSINGS TAB -->
+<div id="tab-closings" class="section">
+  <div class="stat-grid" id="closing-stats"></div>
+  <div class="table-header">
+    <div class="section-label" style="margin:0">Closed transactions</div>
+    <button class="btn primary" onclick="openClosingModal()">+ Add closing</button>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>Client</th><th>Property</th><th>Type</th><th>Sale Price</th><th>COE</th><th>Source</th>
+      </tr></thead>
+      <tbody id="closing-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ADD CLIENT MODAL -->
+<div class="modal-overlay" id="client-modal">
+  <div class="modal">
+    <h3>Add new client</h3>
+    <div class="form-grid">
+      <div class="form-group full"><label>Full name</label><input id="f-name" placeholder="Jane & John Doe" /></div>
+      <div class="form-group"><label>Phone</label><input id="f-phone" placeholder="661-555-0000" /></div>
+      <div class="form-group"><label>Type</label>
+        <select id="f-type"><option value="buyer">Buyer</option><option value="seller">Seller</option></select>
+      </div>
+      <div class="form-group full"><label>Property</label><input id="f-property" placeholder="123 Oak St, Bakersfield" /></div>
+      <div class="form-group"><label>Stage</label>
+        <select id="f-stage">
+          <option>Lead Start</option><option>Nurture</option><option>Buyers</option>
+          <option>Pre-List</option><option>Active Listings</option><option>In Escrow</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Source</label>
+        <select id="f-source">
+          <option>Referral</option><option>Past client</option><option>Zillow</option>
+          <option>Instagram</option><option>Open house</option><option>Sign call</option><option>Database</option>
+        </select>
+      </div>
+      <div class="form-group full"><label>Next action</label><input id="f-next" placeholder="Schedule showing Saturday" /></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn primary" onclick="saveClient()">Save client</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD CLOSING MODAL -->
+<div class="modal-overlay" id="closing-modal">
+  <div class="modal">
+    <h3>Add closing</h3>
+    <div class="form-grid">
+      <div class="form-group full"><label>Client name</label><input id="c-name" placeholder="Jane & John Doe" /></div>
+      <div class="form-group full"><label>Property</label><input id="c-property" placeholder="5234 E Sheridan, Bakersfield" /></div>
+      <div class="form-group"><label>Type</label>
+        <select id="c-type"><option value="seller">Seller</option><option value="buyer">Buyer</option></select>
+      </div>
+      <div class="form-group"><label>Sale Price ($)</label><input id="c-price" type="number" placeholder="450000" /></div>
+      <div class="form-group"><label>Close of Escrow</label><input id="c-coe" type="date" /></div>
+      <div class="form-group"><label>Source</label>
+        <select id="c-source">
+          <option>Referral</option><option>Past client</option><option>Zillow</option>
+          <option>Instagram</option><option>Open house</option><option>Sign call</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeClosingModal()">Cancel</button>
+      <button class="btn primary" onclick="saveClosing()">Save closing</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STAGES = ['Lead Start','Nurture','Buyers','Pre-List','Active Listings','In Escrow'];
+const STAGE_COLORS = ['#b06b10','#EF9F27','#2563a8','#a03060','#1d7a4e','#5b3fa8'];
+const SRC_COLORS = {
+  'Referral':'#5b3fa8','Past client':'#1d7a4e','Zillow':'#2563a8',
+  'Instagram':'#a03060','Open house':'#b06b10','Sign call':'#c8602a','Database':'#6b6760','Database':'#6b6760'
+};
+
+const STORAGE_KEY = 'ap_pipeline_v1';
+
+function load() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultData(); } catch(e) { return defaultData(); }
+}
+function save(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+
+function defaultData() {
+  return {
+    clients: [
+      {id:1,name:'Maria & Tony Reyes',phone:'661-555-0101',property:'3412 Oak St, Bakersfield',type:'buyer',stage:'Buyers',source:'Referral',next:'Schedule showing Sat',added:'Jan 5'},
+      {id:2,name:'Sandra Ortiz',phone:'661-555-0202',property:'905 Pine Ave, Bakersfield',type:'seller',stage:'Pre-List',source:'Past client',next:'Photography Thu',added:'Feb 2'},
+      {id:3,name:'James Liu',phone:'661-555-0303',property:'1201 Elm Blvd, Bakersfield',type:'seller',stage:'Active Listings',source:'Zillow',next:'Open house Sun',added:'Feb 14'},
+      {id:4,name:'Kevin & Priya Shah',phone:'661-555-0404',property:'7788 Sunset Rd, Bakersfield',type:'buyer',stage:'In Escrow',source:'Instagram',next:'Final walkthrough Apr 2',added:'Mar 1'},
+      {id:5,name:'Denise Morgan',phone:'661-555-0505',property:'2290 Valley View, Bakersfield',type:'seller',stage:'Nurture',source:'Sign call',next:'Follow up Mon',added:'Mar 10'},
+    ],
+    closings: [
+      {id:1,name:'Robert & Lisa Chen',property:'5234 E Sheridan, Bakersfield',type:'seller',price:620000,coe:'2026-02-28',source:'Past client'},
+      {id:2,name:'Amy Torres',property:'918 N Maple, Bakersfield',type:'buyer',price:345000,coe:'2026-03-05',source:'Referral'},
+    ]
+  };
+}
+
+let data = load();
+
+function fmt(n) { return '$' + Math.round(n).toLocaleString(); }
+function fmtK(n) { return n >= 1000000 ? '$' + (n/1000000).toFixed(1) + 'M' : '$' + Math.round(n/1000) + 'K'; }
+function fmtDate(s) { if(!s) return '—'; const d = new Date(s+'T12:00:00'); return d.toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
+
+function stageBadge(s) {
+  const map = {'Lead Start':'b-lead','Nurture':'b-nurture','Buyers':'b-buyers','Pre-List':'b-prelist','Active Listings':'b-listings','In Escrow':'b-escrow'};
+  return `<span class="badge ${map[s]||'b-lead'}">${s}</span>`;
+}
+function typeBadge(t) {
+  return `<span class="badge ${t==='buyer'?'b-buyer':'b-seller'}">${t==='buyer'?'Buyer':'Seller'}</span>`;
+}
+function srcHtml(s) {
+  return `<div class="src"><div class="dot" style="background:${SRC_COLORS[s]||'#888'}"></div>${s}</div>`;
+}
+
+function render() {
+  const stageCounts = {};
+  STAGES.forEach(s => stageCounts[s] = 0);
+  data.clients.forEach(c => { if (stageCounts[c.stage] !== undefined) stageCounts[c.stage]++; });
+  const total = data.clients.length;
+  const totalVol = data.closings.reduce((a,c) => a + (c.price||0), 0);
+
+  // Stat grid
+  const statDefs = [
+    {label:'Lead Start', val: stageCounts['Lead Start'], sub:'New leads'},
+    {label:'Nurture', val: stageCounts['Nurture'], sub:'In follow-up'},
+    {label:'Buyers', val: stageCounts['Buyers'], sub:'Active buyers'},
+    {label:'Pre-List', val: stageCounts['Pre-List'], sub:'Sellers prepping'},
+    {label:'Active Listings', val: stageCounts['Active Listings'], sub:'On market'},
+    {label:'In Escrow', val: stageCounts['In Escrow'], sub:'Under contract'},
+    {label:'YTD Closed', val: data.closings.length, sub: fmtK(totalVol) + ' volume', accent: true},
+  ];
+  document.getElementById('stat-grid').innerHTML = statDefs.map(s =>
+    `<div class="stat${s.accent?' accent':''}">
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-value">${s.val}</div>
+      <div class="stat-sub">${s.sub}</div>
+    </div>`
+  ).join('');
+
+  document.getElementById('total-label').textContent = total;
+
+  // Pipeline bars
+  document.getElementById('pipeline-bars').innerHTML = STAGES.map((s,i) => {
+    const pct = total ? Math.round((stageCounts[s]/total)*100) : 0;
+    return `<div class="stage">
+      <div class="stage-name">${s}</div>
+      <div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:${STAGE_COLORS[i]}"></div></div>
+      <div class="stage-count">${stageCounts[s]}</div>
+    </div>`;
+  }).join('');
+
+  // Active clients table
+  document.getElementById('client-tbody').innerHTML = data.clients.length ? data.clients.map(c =>
+    `<tr>
+      <td style="font-weight:500">${c.name}</td>
+      <td style="color:var(--text-muted);font-size:12px">${c.property}</td>
+      <td>${typeBadge(c.type)}</td>
+      <td>${stageBadge(c.stage)}</td>
+      <td>${srcHtml(c.source)}</td>
+      <td style="font-size:12px;color:var(--text-muted)">${c.next||'—'}</td>
+    </tr>`
+  ).join('') : `<tr><td colspan="6" class="empty">No clients yet — add your first one above</td></tr>`;
+
+  // All clients table
+  document.getElementById('all-count').textContent = data.clients.length;
+  document.getElementById('all-tbody').innerHTML = data.clients.length ? data.clients.map(c =>
+    `<tr>
+      <td style="font-weight:500">${c.name}</td>
+      <td style="font-size:12px;color:var(--text-muted)">${c.phone||'—'}</td>
+      <td>${typeBadge(c.type)}</td>
+      <td>${stageBadge(c.stage)}</td>
+      <td>${srcHtml(c.source)}</td>
+      <td style="font-size:12px;color:var(--text-muted)">${c.added||'—'}</td>
+    </tr>`
+  ).join('') : `<tr><td colspan="6" class="empty">No contacts yet</td></tr>`;
+
+  // Closings stats
+  const vol = data.closings.reduce((a,c) => a + (c.price||0), 0);
+  const avg = data.closings.length ? vol / data.closings.length : 0;
+  const gci = vol * 0.025;
+  document.getElementById('closing-stats').innerHTML = [
+    {label:'YTD Closings', val: data.closings.length, sub:'Transactions'},
+    {label:'YTD Volume', val: fmtK(vol), sub:'Total sales', accent: true},
+    {label:'Avg Sale Price', val: fmtK(avg), sub:'Per transaction'},
+    {label:'GCI Est.', val: fmtK(gci), sub:'@ 2.5% avg'},
+  ].map(s => `<div class="stat${s.accent?' accent':''}">
+    <div class="stat-label">${s.label}</div>
+    <div class="stat-value">${s.val}</div>
+    <div class="stat-sub">${s.sub}</div>
+  </div>`).join('');
+
+  // Closings table
+  document.getElementById('closing-tbody').innerHTML = data.closings.length ? data.closings.map(c =>
+    `<tr>
+      <td style="font-weight:500">${c.name}</td>
+      <td style="font-size:12px;color:var(--text-muted)">${c.property}</td>
+      <td>${typeBadge(c.type)}</td>
+      <td style="font-weight:500">${fmt(c.price||0)}</td>
+      <td style="font-size:12px">${fmtDate(c.coe)}</td>
+      <td>${srcHtml(c.source)}</td>
+    </tr>`
+  ).join('') : `<tr><td colspan="6" class="empty">No closings yet this year</td></tr>`;
+}
+
+function showTab(t) {
+  document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  document.querySelectorAll('.tab').forEach((el,i) => {
+    if(['pipeline','clients','closings'][i]===t) el.classList.add('active');
+  });
+}
+
+function openModal() { document.getElementById('client-modal').classList.add('open'); }
+function closeModal() { document.getElementById('client-modal').classList.remove('open'); }
+function openClosingModal() { document.getElementById('closing-modal').classList.add('open'); }
+function closeClosingModal() { document.getElementById('closing-modal').classList.remove('open'); }
+
+function saveClient() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { alert('Please enter a client name.'); return; }
+  const today = new Date();
+  data.clients.push({
+    id: Date.now(),
+    name,
+    phone: document.getElementById('f-phone').value.trim(),
+    property: document.getElementById('f-property').value.trim() || 'TBD',
+    type: document.getElementById('f-type').value,
+    stage: document.getElementById('f-stage').value,
+    source: document.getElementById('f-source').value,
+    next: document.getElementById('f-next').value.trim(),
+    added: today.toLocaleDateString('en-US',{month:'short',day:'numeric'})
+  });
+  save(data);
+  render();
+  closeModal();
+  ['f-name','f-phone','f-property','f-next'].forEach(id => document.getElementById(id).value = '');
+}
+
+function saveClosing() {
+  const name = document.getElementById('c-name').value.trim();
+  if (!name) { alert('Please enter a client name.'); return; }
+  data.closings.push({
+    id: Date.now(),
+    name,
+    property: document.getElementById('c-property').value.trim() || 'TBD',
+    type: document.getElementById('c-type').value,
+    price: parseFloat(document.getElementById('c-price').value) || 0,
+    coe: document.getElementById('c-coe').value,
+    source: document.getElementById('c-source').value,
+  });
+  save(data);
+  render();
+  closeClosingModal();
+  ['c-name','c-property','c-price','c-coe'].forEach(id => document.getElementById(id).value = '');
+}
+
+// Close modals on overlay click
+document.getElementById('client-modal').addEventListener('click', function(e) { if(e.target===this) closeModal(); });
+document.getElementById('closing-modal').addEventListener('click', function(e) { if(e.target===this) closeClosingModal(); });
+
+// Live date
+const now = new Date();
+document.getElementById('live-date').textContent = now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+
+render();
+</script>
+</body>
+</html>
