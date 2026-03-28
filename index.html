@@ -431,19 +431,9 @@ async function handleForgot(){
 }
 
 document.getElementById('signout-btn').addEventListener('click',async function(){
-  try{
-    this.textContent='Signing out...';this.disabled=true;
-    await sb.auth.signOut();
-  }catch(e){
-    console.log(e);
-  }finally{
-    currentUser=null;clients=[];closings=[];
-    document.getElementById('app').style.display='none';
-    document.getElementById('auth-screen').style.display='flex';
-    document.getElementById('auth-email').value='';
-    document.getElementById('auth-password').value='';
-    this.textContent='Sign out';this.disabled=false;
-  }
+  this.textContent='Signing out...';this.disabled=true;
+  await sb.auth.signOut();
+  this.textContent='Sign out';this.disabled=false;
 });
 
 sb.auth.onAuthStateChange(async(event,session)=>{
