@@ -435,7 +435,12 @@ document.getElementById('signout-btn').addEventListener('click',async function()
 });
 
 sb.auth.onAuthStateChange(async(event,session)=>{
-  if(session?.user){
+  if(event==='SIGNED_OUT'){
+    document.getElementById('app').style.display='none';
+    document.getElementById('auth-screen').style.display='flex';
+    return;
+  }
+  if(event==='SIGNED_IN'&&session?.user){
     currentUser=session.user;
     document.getElementById('auth-screen').style.display='none';
     document.getElementById('app').style.display='block';
