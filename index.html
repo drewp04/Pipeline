@@ -693,6 +693,7 @@ async function deleteClosing(id){
 async function saveClosing(){
   const name=document.getElementById('c-name').value.trim();
   if(!name){alert('Please enter a client name.');return;}
+if(!currentUser){alert('Session expired. Please sign out and sign back in.');return;}
   const btn=document.getElementById('save-closing-btn');
   btn.disabled=true;btn.textContent='Saving...';
   try{
