@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Andrew Perez — 2026 Pipeline</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,7 +30,7 @@
   .auth-brand { font-family: var(--font-display); font-size: 22px; font-weight: 400; margin-bottom: 0.25rem; }
   .auth-brand em { color: var(--accent); font-style: italic; }
   .auth-sub { font-size: 13px; color: var(--text-faint); margin-bottom: 2rem; }
-  .auth-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
+  .auth-tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
   .auth-tab { font-size: 13px; font-weight: 500; padding: 8px 16px; cursor: pointer; color: var(--text-muted); border-bottom: 2px solid transparent; margin-bottom: -1px; }
   .auth-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
   .form-group { margin-bottom: 1rem; }
@@ -50,19 +51,19 @@
   .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
   .section { padding: 1.75rem 2rem; display: none; }
   .section.active { display: block; }
-  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 1.75rem; }
-  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; }
-  .stat-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-faint); margin-bottom: 6px; }
-  .stat-value { font-family: var(--font-display); font-size: 30px; font-weight: 400; line-height: 1; }
-  .stat-sub { font-size: 11px; color: var(--text-faint); margin-top: 4px; }
-  .stat.accent .stat-value { color: var(--accent); }
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; }
+  .kpi-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-faint); margin-bottom: 6px; }
+  .kpi-value { font-family: var(--font-display); font-size: 28px; font-weight: 400; line-height: 1; }
+  .kpi-sub { font-size: 11px; color: var(--text-faint); margin-top: 4px; }
+  .kpi.accent .kpi-value { color: var(--accent); }
+  .kpi.green .kpi-value { color: var(--green); }
+  .kpi.blue .kpi-value { color: var(--blue); }
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 1.5rem; }
+  .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; }
+  .chart-card h3 { font-size: 13px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; }
+  .chart-wrap { position: relative; height: 200px; }
   .section-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-faint); margin-bottom: 0.75rem; }
-  .pipeline-bar { display: flex; gap: 10px; margin-bottom: 1.75rem; flex-wrap: wrap; }
-  .stage { min-width: 80px; flex: 1; }
-  .stage-name { font-size: 11px; color: var(--text-muted); margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .bar-wrap { background: var(--surface2); border-radius: 3px; height: 5px; }
-  .bar-fill { height: 5px; border-radius: 3px; }
-  .stage-count { font-size: 15px; font-weight: 500; margin-top: 5px; }
   .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 8px; }
   .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
   table { width: 100%; border-collapse: collapse; }
@@ -78,20 +79,22 @@
   .b-prelist { background: var(--pink-light); color: var(--pink); }
   .b-listings { background: var(--green-light); color: var(--green); }
   .b-escrow { background: var(--purple-light); color: var(--purple); }
+  .b-closed { background: var(--green-light); color: var(--green); }
   .src { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-muted); }
   .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
   .btn { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-body); font-size: 13px; font-weight: 500; padding: 7px 16px; border: 1px solid var(--border-strong); border-radius: var(--radius); background: var(--surface); color: var(--text); cursor: pointer; transition: background 0.15s; }
   .btn:hover { background: var(--surface2); }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .btn.primary { background: var(--accent); color: white; border-color: var(--accent); width: 100%; justify-content: center; }
+  .btn.primary { background: var(--accent); color: white; border-color: var(--accent); }
   .btn.primary:hover { background: #b05522; }
-  .btn.outline { background: transparent; }
   .btn.danger { background: var(--red-light); color: var(--red); border-color: transparent; }
   .btn.sm { font-size: 12px; padding: 4px 10px; }
+  .btn.signout { background: transparent; border-color: var(--border-strong); color: var(--text-muted); font-size: 12px; padding: 5px 12px; }
+  .btn.signout:hover { background: var(--red-light); color: var(--red); border-color: transparent; }
   .action-btns { display: flex; gap: 6px; }
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 200; align-items: center; justify-content: center; }
   .modal-overlay.open { display: flex; }
-  .modal { background: var(--surface); border-radius: var(--radius-lg); padding: 1.75rem; width: 90%; max-width: 500px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); max-height: 90vh; overflow-y: auto; }
+  .modal { background: var(--surface); border-radius: var(--radius-lg); padding: 1.75rem; width: 90%; max-width: 560px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); max-height: 90vh; overflow-y: auto; }
   .modal h3 { font-family: var(--font-display); font-size: 20px; font-weight: 400; margin-bottom: 1.25rem; }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .fg { display: flex; flex-direction: column; gap: 5px; }
@@ -102,20 +105,27 @@
   .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.25rem; }
   .empty { text-align: center; padding: 3rem; color: var(--text-faint); font-size: 14px; }
   .loading { text-align: center; padding: 2rem; color: var(--text-faint); font-size: 13px; }
+  .addr { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+
+  /* NET SHEET */
   .net-sheet { max-width: 700px; }
   .ns-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.25rem; }
   .ns-card h3 { font-family: var(--font-display); font-size: 17px; font-weight: 400; margin-bottom: 1rem; }
   .ns-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
   .ns-row.single { grid-template-columns: 1fr; }
+  .ns-row.triple { grid-template-columns: 2fr 1fr 1fr; }
   .ns-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-faint); margin-bottom: 4px; }
-  .ns-input-wrap { position: relative; }
-  .ns-input-wrap .pfx { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 13px; pointer-events: none; }
-  .ns-input-wrap input { padding-left: 22px; }
-  .ns-pct-wrap { position: relative; }
-  .ns-pct-wrap .sfx { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 13px; pointer-events: none; }
-  .ns-pct-wrap input { padding-right: 28px; }
-  .ns-input-wrap input, .ns-pct-wrap input, .ns-card input { font-family: var(--font-body); font-size: 13px; padding: 8px 10px; border: 1px solid var(--border-strong); border-radius: var(--radius); background: var(--bg); color: var(--text); outline: none; width: 100%; }
-  .ns-input-wrap input:focus, .ns-pct-wrap input:focus { border-color: var(--accent); }
+  .ns-field { display: flex; flex-direction: column; gap: 4px; }
+  .ns-input-wrap { position: relative; display: flex; align-items: center; }
+  .ns-input-wrap .pfx { position: absolute; left: 10px; color: var(--text-muted); font-size: 13px; pointer-events: none; z-index: 1; }
+  .ns-input-wrap input { padding-left: 20px; width: 100%; font-family: var(--font-body); font-size: 13px; padding-top: 8px; padding-bottom: 8px; padding-right: 8px; border: 1px solid var(--border-strong); border-radius: var(--radius); background: var(--bg); color: var(--text); outline: none; }
+  .ns-input-wrap input:focus { border-color: var(--accent); }
+  .ns-pct-wrap { position: relative; display: flex; align-items: center; }
+  .ns-pct-wrap .sfx { position: absolute; right: 10px; color: var(--text-muted); font-size: 13px; pointer-events: none; }
+  .ns-pct-wrap input { padding-right: 24px; width: 100%; font-family: var(--font-body); font-size: 13px; padding-top: 8px; padding-bottom: 8px; padding-left: 10px; border: 1px solid var(--border-strong); border-radius: var(--radius); background: var(--bg); color: var(--text); outline: none; }
+  .ns-pct-wrap input:focus { border-color: var(--accent); }
+  .ns-plain input { width: 100%; font-family: var(--font-body); font-size: 13px; padding: 8px 10px; border: 1px solid var(--border-strong); border-radius: var(--radius); background: var(--bg); color: var(--text); outline: none; }
+  .ns-plain input:focus { border-color: var(--accent); }
   .ns-divider { border: none; border-top: 1px solid var(--border); margin: 0.75rem 0; }
   .ns-line { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-size: 13px; }
   .ns-line .lbl { color: var(--text-muted); }
@@ -125,26 +135,29 @@
   .ns-total .lbl { font-size: 14px; font-weight: 500; color: var(--accent); }
   .ns-total .val { font-family: var(--font-display); font-size: 28px; color: var(--accent); }
   .ns-actions { display: flex; gap: 8px; margin-top: 1rem; }
-  .ns-actions .btn { width: auto; justify-content: center; }
   .disclaimer { font-size: 11px; color: var(--text-faint); margin-top: 0.75rem; line-height: 1.5; }
+
   @media (max-width: 640px) {
     .header { padding: 1rem 1rem 0; }
     .section { padding: 1.25rem 1rem; }
-    .stat-grid { grid-template-columns: repeat(2, 1fr); }
-    th:nth-child(n+5), td:nth-child(n+5) { display: none; }
-    .ns-row { grid-template-columns: 1fr; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .charts-grid { grid-template-columns: 1fr; }
+    th:nth-child(n+4), td:nth-child(n+4) { display: none; }
+    .ns-row, .ns-row.triple { grid-template-columns: 1fr; }
     .form-grid { grid-template-columns: 1fr; }
     .fg.full { grid-column: 1; }
   }
   @media print {
     .header, .ns-actions, .btn { display: none !important; }
     .section { display: block !important; padding: 0; }
-    #tab-pipeline, #tab-clients, #tab-closings { display: none !important; }
+    #tab-dashboard, #tab-clients, #tab-closings { display: none !important; }
     #tab-netsheet { display: block !important; }
   }
 </style>
 </head>
 <body>
+
+<!-- AUTH -->
 <div id="auth-screen" class="auth-wrap">
   <div class="auth-card">
     <div class="auth-brand">Andrew Perez — <em>Pipeline</em></div>
@@ -157,102 +170,123 @@
     <div id="auth-success" class="auth-success"></div>
     <div class="form-group"><label>Email</label><input id="auth-email" type="email" placeholder="andrew@aprealtor.co" /></div>
     <div class="form-group"><label>Password</label><input id="auth-password" type="password" placeholder="••••••••" /></div>
-    <button class="btn primary" id="auth-btn" onclick="handleAuth()">Sign in</button>
+    <button class="btn primary" id="auth-btn" onclick="handleAuth()" style="width:100%;justify-content:center;">Sign in</button>
     <div style="text-align:center;margin-top:1rem;">
-      <span style="font-size:12px;color:var(--text-faint);cursor:pointer;" onclick="handleForgot()">Forgot password?</span>
+      <span style="font-size:12px;color:var(--text-faint);cursor:pointer;text-decoration:underline;" onclick="handleForgot()">Forgot password?</span>
     </div>
   </div>
 </div>
+
+<!-- APP -->
 <div id="app" style="display:none">
   <div class="header">
     <div class="header-top">
       <div class="brand">Andrew Perez — <em>2026 Pipeline</em></div>
       <div class="header-right">
         <span class="user-email" id="user-email"></span>
-        <button class="btn sm outline" onclick="signOut()">Sign out</button>
+        <button class="btn signout" id="signout-btn">Sign out</button>
       </div>
     </div>
     <div class="tabs">
-      <div class="tab active" onclick="showTab('pipeline')">Pipeline</div>
+      <div class="tab active" onclick="showTab('dashboard')">Dashboard</div>
       <div class="tab" onclick="showTab('clients')">Clients</div>
       <div class="tab" onclick="showTab('closings')">Closings</div>
       <div class="tab" onclick="showTab('netsheet')">Net Sheet</div>
     </div>
   </div>
-  <div id="tab-pipeline" class="section active">
-    <div class="stat-grid" id="stat-grid"></div>
-    <div class="section-label">Pipeline distribution · <span id="total-label">0</span> active</div>
-    <div class="pipeline-bar" id="pipeline-bars"></div>
+
+  <!-- DASHBOARD -->
+  <div id="tab-dashboard" class="section active">
+    <div class="kpi-grid" id="kpi-grid"></div>
+    <div class="charts-grid">
+      <div class="chart-card"><h3>Pipeline by stage</h3><div class="chart-wrap"><canvas id="stage-chart"></canvas></div></div>
+      <div class="chart-card"><h3>GCI by month</h3><div class="chart-wrap"><canvas id="gci-chart"></canvas></div></div>
+      <div class="chart-card"><h3>Lead sources</h3><div class="chart-wrap"><canvas id="source-chart"></canvas></div></div>
+      <div class="chart-card"><h3>Buyer vs seller</h3><div class="chart-wrap"><canvas id="type-chart"></canvas></div></div>
+    </div>
     <div class="table-header">
-      <div class="section-label" style="margin:0">Active clients</div>
-      <button class="btn primary" style="width:auto" onclick="openModal()">+ Add client</button>
+      <div class="section-label" style="margin:0">Recent activity</div>
+      <button class="btn primary" onclick="openModal()">+ Add client</button>
     </div>
     <div class="table-wrap">
-      <table><thead><tr><th>Client</th><th>Property</th><th>Type</th><th>Stage</th><th>Source</th><th>Next action</th><th></th></tr></thead>
-      <tbody id="client-tbody"><tr><td colspan="7" class="loading">Loading...</td></tr></tbody></table>
+      <table><thead><tr><th>Client</th><th>Stage</th><th>Type</th><th>Source</th><th>Next action</th></tr></thead>
+      <tbody id="recent-tbody"><tr><td colspan="5" class="loading">Loading...</td></tr></tbody></table>
     </div>
   </div>
+
+  <!-- CLIENTS -->
   <div id="tab-clients" class="section">
     <div class="table-header">
       <div class="section-label" style="margin:0">All contacts · <span id="all-count">0</span></div>
-      <button class="btn primary" style="width:auto" onclick="openModal()">+ Add client</button>
+      <button class="btn primary" onclick="openModal()">+ Add client</button>
     </div>
     <div class="table-wrap">
-      <table><thead><tr><th>Client</th><th>Phone</th><th>Type</th><th>Stage</th><th>Source</th><th>Added</th><th></th></tr></thead>
-      <tbody id="all-tbody"><tr><td colspan="7" class="loading">Loading...</td></tr></tbody></table>
+      <table><thead><tr><th>Client</th><th>Address</th><th>Type</th><th>Stage</th><th>Sale Price</th><th>Commission</th><th>Source</th><th></th></tr></thead>
+      <tbody id="client-tbody"><tr><td colspan="8" class="loading">Loading...</td></tr></tbody></table>
     </div>
   </div>
+
+  <!-- CLOSINGS -->
   <div id="tab-closings" class="section">
-    <div class="stat-grid" id="closing-stats"></div>
+    <div class="kpi-grid" id="closing-kpis"></div>
     <div class="table-header">
       <div class="section-label" style="margin:0">Closed transactions</div>
-      <button class="btn primary" style="width:auto" onclick="openClosingModal()">+ Add closing</button>
+      <button class="btn primary" onclick="openClosingModal()">+ Add closing</button>
     </div>
     <div class="table-wrap">
-      <table><thead><tr><th>Client</th><th>Property</th><th>Type</th><th>Sale Price</th><th>COE</th><th>Source</th><th></th></tr></thead>
-      <tbody id="closing-tbody"><tr><td colspan="7" class="loading">Loading...</td></tr></tbody></table>
+      <table><thead><tr><th>Client</th><th>Address</th><th>Type</th><th>Sale Price</th><th>Commission</th><th>COE</th><th>Source</th><th></th></tr></thead>
+      <tbody id="closing-tbody"><tr><td colspan="8" class="loading">Loading...</td></tr></tbody></table>
     </div>
   </div>
+
+  <!-- NET SHEET -->
   <div id="tab-netsheet" class="section">
     <div class="net-sheet">
       <div class="ns-card">
         <h3>Sale information</h3>
         <div class="ns-row">
-          <div class="fg"><div class="ns-label">Seller name(s)</div><input id="ns-seller" placeholder="Jane & John Smith" oninput="calcNet()" /></div>
-          <div class="fg"><div class="ns-label">Property address</div><input id="ns-address" placeholder="123 Oak St, Bakersfield" oninput="calcNet()" /></div>
+          <div class="ns-field"><div class="ns-label">Seller name(s)</div><div class="ns-plain"><input id="ns-seller" placeholder="Jane & John Smith" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">Close of escrow</div><div class="ns-plain"><input id="ns-coe" type="date" oninput="calcNet()" /></div></div>
+        </div>
+        <div class="ns-row single">
+          <div class="ns-field"><div class="ns-label">Street address</div><div class="ns-plain"><input id="ns-street" placeholder="123 Oak St" oninput="calcNet()" /></div></div>
+        </div>
+        <div class="ns-row triple">
+          <div class="ns-field"><div class="ns-label">City</div><div class="ns-plain"><input id="ns-city" placeholder="Bakersfield" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">State</div><div class="ns-plain"><input id="ns-state" placeholder="CA" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">Zip</div><div class="ns-plain"><input id="ns-zip" placeholder="93301" oninput="calcNet()" /></div></div>
         </div>
         <div class="ns-row">
-          <div class="fg"><div class="ns-label">Sale price ($)</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-price" type="number" placeholder="450000" oninput="calcNet()" /></div></div>
-          <div class="fg"><div class="ns-label">Loan payoff ($)</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-payoff" type="number" placeholder="0" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">Sale price</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-price" type="number" min="0" placeholder="450000" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">Loan payoff</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-payoff" type="number" min="0" placeholder="0" oninput="calcNet()" /></div></div>
         </div>
-        <div class="ns-row">
-          <div class="fg"><div class="ns-label">2nd mortgage / HELOC ($)</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-heloc" type="number" placeholder="0" oninput="calcNet()" /></div></div>
-          <div class="fg"><div class="ns-label">Close of escrow</div><input id="ns-coe" type="date" oninput="calcNet()" /></div>
+        <div class="ns-row single">
+          <div class="ns-field"><div class="ns-label">2nd mortgage / HELOC</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-heloc" type="number" min="0" placeholder="0" oninput="calcNet()" /></div></div>
         </div>
       </div>
       <div class="ns-card">
         <h3>Commission</h3>
         <div class="ns-row">
-          <div class="fg"><div class="ns-label">Listing agent (%)</div><div class="ns-pct-wrap"><span class="sfx">%</span><input id="ns-list-pct" type="number" step="0.1" value="2.5" oninput="calcNet()" /></div></div>
-          <div class="fg"><div class="ns-label">Buyer agent (%)</div><div class="ns-pct-wrap"><span class="sfx">%</span><input id="ns-buy-pct" type="number" step="0.1" value="2.5" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">Listing agent</div><div class="ns-pct-wrap"><span class="sfx">%</span><input id="ns-list-pct" type="number" min="0" max="10" step="0.1" value="2.5" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">Buyer agent</div><div class="ns-pct-wrap"><span class="sfx">%</span><input id="ns-buy-pct" type="number" min="0" max="10" step="0.1" value="2.5" oninput="calcNet()" /></div></div>
         </div>
       </div>
       <div class="ns-card">
         <h3>Closing costs</h3>
         <div class="ns-row">
-          <div class="fg"><div class="ns-label">Title & Escrow fees ($)</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-title" type="number" placeholder="2500" oninput="calcNet()" /></div></div>
-          <div class="fg"><div class="ns-label">County transfer tax ($)</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-transfer" type="number" placeholder="0" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">Title & Escrow fees</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-title" type="number" min="0" placeholder="2500" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">County transfer tax</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-transfer" type="number" min="0" placeholder="0" oninput="calcNet()" /></div></div>
         </div>
         <div class="ns-row">
-          <div class="fg"><div class="ns-label">HOA fees / transfer ($)</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-hoa" type="number" placeholder="0" oninput="calcNet()" /></div></div>
-          <div class="fg"><div class="ns-label">Home warranty ($)</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-warranty" type="number" placeholder="0" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">HOA fees / transfer</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-hoa" type="number" min="0" placeholder="0" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">Home warranty</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-warranty" type="number" min="0" placeholder="0" oninput="calcNet()" /></div></div>
         </div>
         <div class="ns-row">
-          <div class="fg"><div class="ns-label">Staging / Photos ($)</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-staging" type="number" placeholder="0" oninput="calcNet()" /></div></div>
-          <div class="fg"><div class="ns-label">Repairs / Concessions ($)</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-repairs" type="number" placeholder="0" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">Staging / Photos</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-staging" type="number" min="0" placeholder="0" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">Repairs / Concessions</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-repairs" type="number" min="0" placeholder="0" oninput="calcNet()" /></div></div>
         </div>
         <div class="ns-row single">
-          <div class="fg"><div class="ns-label">Other costs ($)</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-other" type="number" placeholder="0" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">Other costs</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-other" type="number" min="0" placeholder="0" oninput="calcNet()" /></div></div>
         </div>
       </div>
       <div class="ns-card">
@@ -282,6 +316,8 @@
     </div>
   </div>
 </div>
+
+<!-- CLIENT MODAL -->
 <div class="modal-overlay" id="client-modal">
   <div class="modal">
     <h3 id="modal-title">Add new client</h3>
@@ -289,36 +325,66 @@
     <div class="form-grid">
       <div class="fg full"><label>Full name</label><input id="f-name" placeholder="Jane & John Doe" /></div>
       <div class="fg"><label>Phone</label><input id="f-phone" placeholder="661-555-0000" /></div>
-      <div class="fg"><label>Type</label><select id="f-type"><option value="buyer">Buyer</option><option value="seller">Seller</option></select></div>
-      <div class="fg full"><label>Property</label><input id="f-property" placeholder="123 Oak St, Bakersfield" /></div>
-      <div class="fg"><label>Stage</label><select id="f-stage"><option>Lead Start</option><option>Nurture</option><option>Buyers</option><option>Pre-List</option><option>Active Listings</option><option>In Escrow</option></select></div>
-      <div class="fg"><label>Source</label><select id="f-source"><option>Referral</option><option>Past client</option><option>Zillow</option><option>Instagram</option><option>Open house</option><option>Sign call</option><option>Database</option></select></div>
+      <div class="fg"><label>Type</label><select id="f-type" onchange="toggleSellerFields()"><option value="buyer">Buyer</option><option value="seller">Seller</option></select></div>
+      <div class="fg full"><label>Street address</label><input id="f-street" placeholder="123 Oak St" /></div>
+      <div class="fg full" style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;">
+        <div class="fg"><label>City</label><input id="f-city" placeholder="Bakersfield" /></div>
+        <div class="fg"><label>State</label><input id="f-state" placeholder="CA" /></div>
+        <div class="fg"><label>Zip</label><input id="f-zip" placeholder="93301" /></div>
+      </div>
+      <div class="fg"><label>Stage</label>
+        <select id="f-stage">
+          <option>Lead Start</option><option>Nurture</option><option>Buyers</option>
+          <option>Pre-List</option><option>Active Listings</option><option>In Escrow</option><option>Closed</option>
+        </select>
+      </div>
+      <div class="fg"><label>Source</label>
+        <select id="f-source"><option>Referral</option><option>Past client</option><option>Zillow</option><option>Instagram</option><option>Open house</option><option>Sign call</option><option>Database</option></select>
+      </div>
       <div class="fg full"><label>Next action</label><input id="f-next" placeholder="Schedule showing Saturday" /></div>
+      <div id="seller-section" style="display:none;grid-column:1/-1;">
+        <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px;margin-bottom:12px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent);">Seller details</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="fg"><label>Sale / List price ($)</label><input id="f-price" type="number" min="0" placeholder="450000" /></div>
+          <div class="fg"><label>Your commission (%)</label><input id="f-commission" type="number" min="0" step="0.1" placeholder="2.5" /></div>
+        </div>
+      </div>
     </div>
     <div class="modal-actions">
       <button class="btn" onclick="closeModal()">Cancel</button>
-      <button class="btn primary" style="width:auto" id="save-client-btn" onclick="saveClient()">Save client</button>
+      <button class="btn primary" id="save-client-btn" onclick="saveClient()">Save client</button>
     </div>
   </div>
 </div>
+
+<!-- CLOSING MODAL -->
 <div class="modal-overlay" id="closing-modal">
   <div class="modal">
     <h3 id="closing-modal-title">Add closing</h3>
     <input type="hidden" id="c-id" />
     <div class="form-grid">
       <div class="fg full"><label>Client name</label><input id="c-name" placeholder="Jane & John Doe" /></div>
-      <div class="fg full"><label>Property</label><input id="c-property" placeholder="5234 E Sheridan, Bakersfield" /></div>
+      <div class="fg full"><label>Street address</label><input id="c-street" placeholder="123 Oak St" /></div>
+      <div class="fg full" style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;">
+        <div class="fg"><label>City</label><input id="c-city" placeholder="Bakersfield" /></div>
+        <div class="fg"><label>State</label><input id="c-state" placeholder="CA" /></div>
+        <div class="fg"><label>Zip</label><input id="c-zip" placeholder="93301" /></div>
+      </div>
       <div class="fg"><label>Type</label><select id="c-type"><option value="seller">Seller</option><option value="buyer">Buyer</option></select></div>
-      <div class="fg"><label>Sale Price ($)</label><input id="c-price" type="number" placeholder="450000" /></div>
+      <div class="fg"><label>Sale Price ($)</label><input id="c-price" type="number" min="0" placeholder="450000" /></div>
+      <div class="fg"><label>Commission (%)</label><input id="c-commission" type="number" min="0" step="0.1" placeholder="2.5" /></div>
       <div class="fg"><label>Close of Escrow</label><input id="c-coe" type="date" /></div>
-      <div class="fg"><label>Source</label><select id="c-source"><option>Referral</option><option>Past client</option><option>Zillow</option><option>Instagram</option><option>Open house</option><option>Sign call</option></select></div>
+      <div class="fg"><label>Source</label>
+        <select id="c-source"><option>Referral</option><option>Past client</option><option>Zillow</option><option>Instagram</option><option>Open house</option><option>Sign call</option></select>
+      </div>
     </div>
     <div class="modal-actions">
       <button class="btn" onclick="closeClosingModal()">Cancel</button>
-      <button class="btn primary" style="width:auto" id="save-closing-btn" onclick="saveClosing()">Save closing</button>
+      <button class="btn primary" id="save-closing-btn" onclick="saveClosing()">Save closing</button>
     </div>
   </div>
 </div>
+
 <script>
 const SUPABASE_URL='https://xobgezpptkktdbowpdai.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhvYmdlenBwdGtrdGRib3dwZGFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NTI1NjEsImV4cCI6MjA5MDIyODU2MX0.5kBh9IgL8WtLvS1oIxk8o4wqj-EcB0Ior4fpeAz7EnE';
@@ -327,44 +393,335 @@ const STAGES=['Lead Start','Nurture','Buyers','Pre-List','Active Listings','In E
 const STAGE_COLORS=['#b06b10','#EF9F27','#2563a8','#a03060','#1d7a4e','#5b3fa8'];
 const SRC_COLORS={'Referral':'#5b3fa8','Past client':'#1d7a4e','Zillow':'#2563a8','Instagram':'#a03060','Open house':'#b06b10','Sign call':'#c8602a','Database':'#6b6760'};
 let currentUser=null,clients=[],closings=[];
+let stageChart=null,gciChart=null,sourceChart=null,typeChart=null;
 let authMode='login';
+
 function switchAuthTab(mode){authMode=mode;document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',['login','signup'][i]===mode));document.getElementById('auth-btn').textContent=mode==='login'?'Sign in':'Create account';document.getElementById('auth-error').style.display='none';document.getElementById('auth-success').style.display='none';}
 function showAuthError(msg){const el=document.getElementById('auth-error');el.textContent=msg;el.style.display='block';document.getElementById('auth-success').style.display='none';}
 function showAuthSuccess(msg){const el=document.getElementById('auth-success');el.textContent=msg;el.style.display='block';document.getElementById('auth-error').style.display='none';}
-async function handleAuth(){const email=document.getElementById('auth-email').value.trim();const password=document.getElementById('auth-password').value;const btn=document.getElementById('auth-btn');if(!email||!password){showAuthError('Please enter your email and password.');return;}btn.disabled=true;btn.textContent=authMode==='login'?'Signing in...':'Creating account...';document.getElementById('auth-error').style.display='none';try{let result;if(authMode==='login'){result=await sb.auth.signInWithPassword({email,password});}else{result=await sb.auth.signUp({email,password});if(!result.error&&result.data.user&&!result.data.session){showAuthSuccess('Check your email to confirm your account, then sign in.');btn.disabled=false;btn.textContent='Create account';return;}}if(result.error){showAuthError(result.error.message);}}catch(e){showAuthError('Something went wrong. Please try again.');}btn.disabled=false;btn.textContent=authMode==='login'?'Sign in':'Create account';}
-async function handleForgot(){const email=document.getElementById('auth-email').value.trim();if(!email){showAuthError('Enter your email address first.');return;}const{error}=await sb.auth.resetPasswordForEmail(email);if(error){showAuthError(error.message);}else{showAuthSuccess('Password reset email sent!');}}
-async function signOut(){await sb.auth.signOut();document.getElementById('app').style.display='none';document.getElementById('auth-screen').style.display='flex';currentUser=null;clients=[];closings=[];}
-sb.auth.onAuthStateChange(async(event,session)=>{if(session?.user){currentUser=session.user;document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='block';document.getElementById('user-email').textContent=currentUser.email;await loadAll();}});
+
+async function handleAuth(){
+  const email=document.getElementById('auth-email').value.trim();
+  const password=document.getElementById('auth-password').value;
+  const btn=document.getElementById('auth-btn');
+  if(!email||!password){showAuthError('Please enter your email and password.');return;}
+  btn.disabled=true;btn.textContent=authMode==='login'?'Signing in...':'Creating account...';
+  document.getElementById('auth-error').style.display='none';
+  try{
+    let result;
+    if(authMode==='login'){result=await sb.auth.signInWithPassword({email,password});}
+    else{result=await sb.auth.signUp({email,password});if(!result.error&&result.data.user&&!result.data.session){showAuthSuccess('Check your email to confirm your account, then sign in.');btn.disabled=false;btn.textContent='Create account';return;}}
+    if(result.error){showAuthError(result.error.message);}
+  }catch(e){showAuthError('Something went wrong. Please try again.');}
+  btn.disabled=false;btn.textContent=authMode==='login'?'Sign in':'Create account';
+}
+
+async function handleForgot(){
+  const email=document.getElementById('auth-email').value.trim();
+  if(!email){showAuthError('Enter your email address first.');return;}
+  const{error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:'https://drewp04.github.io/Pipeline'});
+  if(error){showAuthError(error.message);}else{showAuthSuccess('Password reset email sent! Check your inbox.');}
+}
+
+document.getElementById('signout-btn').addEventListener('click',async function(){
+  this.textContent='Signing out...';this.disabled=true;
+  await sb.auth.signOut();
+  currentUser=null;clients=[];closings=[];
+  document.getElementById('app').style.display='none';
+  document.getElementById('auth-screen').style.display='flex';
+  document.getElementById('auth-email').value='';
+  document.getElementById('auth-password').value='';
+  this.textContent='Sign out';this.disabled=false;
+});
+
+sb.auth.onAuthStateChange(async(event,session)=>{
+  if(session?.user){
+    currentUser=session.user;
+    document.getElementById('auth-screen').style.display='none';
+    document.getElementById('app').style.display='block';
+    document.getElementById('user-email').textContent=currentUser.email;
+    await loadAll();
+  }
+});
+
 async function loadAll(){await Promise.all([loadClients(),loadClosings()]);render();}
 async function loadClients(){const{data,error}=await sb.from('clients').select('*').order('created_at',{ascending:false});if(!error)clients=data||[];}
 async function loadClosings(){const{data,error}=await sb.from('closings').select('*').order('created_at',{ascending:false});if(!error)closings=data||[];}
+
 const fmt=n=>'$'+Math.round(n).toLocaleString();
 const fmtK=n=>n>=1000000?'$'+(n/1000000).toFixed(1)+'M':'$'+Math.round(n/1000)+'K';
 const fmtD=s=>{if(!s)return'—';const d=new Date(s+'T12:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});};
 const gv=id=>parseFloat(document.getElementById(id).value)||0;
-function stageBadge(s){const m={'Lead Start':'b-lead','Nurture':'b-nurture','Buyers':'b-buyers','Pre-List':'b-prelist','Active Listings':'b-listings','In Escrow':'b-escrow'};return`<span class="badge ${m[s]||'b-lead'}">${s}</span>`;}
+const commAmt=(price,pct)=>price*(pct/100);
+const fmtAddr=c=>{const parts=[c.street,[c.city,c.state].filter(Boolean).join(', '),c.zip].filter(Boolean);return parts.length?parts.join(' '):c.property||'—';};
+
+function stageBadge(s){const m={'Lead Start':'b-lead','Nurture':'b-nurture','Buyers':'b-buyers','Pre-List':'b-prelist','Active Listings':'b-listings','In Escrow':'b-escrow','Closed':'b-closed'};return`<span class="badge ${m[s]||'b-lead'}">${s}</span>`;}
 function typeBadge(t){return`<span class="badge ${t==='buyer'?'b-buyer':'b-seller'}">${t==='buyer'?'Buyer':'Seller'}</span>`;}
 function srcHtml(s){return`<div class="src"><div class="dot" style="background:${SRC_COLORS[s]||'#888'}"></div>${s}</div>`;}
 function clientBtns(id){return`<div class="action-btns"><button class="btn sm" onclick="editClient('${id}')">Edit</button><button class="btn sm danger" onclick="deleteClient('${id}')">Delete</button></div>`;}
 function closingBtns(id){return`<div class="action-btns"><button class="btn sm" onclick="editClosing('${id}')">Edit</button><button class="btn sm danger" onclick="deleteClosing('${id}')">Delete</button></div>`;}
-function render(){const sc={};STAGES.forEach(s=>sc[s]=0);clients.forEach(c=>{if(sc[c.stage]!==undefined)sc[c.stage]++;});const total=clients.length;const totalVol=closings.reduce((a,c)=>a+(c.price||0),0);document.getElementById('stat-grid').innerHTML=[{label:'Lead Start',val:sc['Lead Start'],sub:'New leads'},{label:'Nurture',val:sc['Nurture'],sub:'In follow-up'},{label:'Buyers',val:sc['Buyers'],sub:'Active buyers'},{label:'Pre-List',val:sc['Pre-List'],sub:'Sellers prepping'},{label:'Active Listings',val:sc['Active Listings'],sub:'On market'},{label:'In Escrow',val:sc['In Escrow'],sub:'Under contract'},{label:'YTD Closed',val:closings.length,sub:fmtK(totalVol)+' volume',accent:true}].map(s=>`<div class="stat${s.accent?' accent':''}"><div class="stat-label">${s.label}</div><div class="stat-value">${s.val}</div><div class="stat-sub">${s.sub}</div></div>`).join('');document.getElementById('total-label').textContent=total;document.getElementById('pipeline-bars').innerHTML=STAGES.map((s,i)=>{const pct=total?Math.round((sc[s]/total)*100):0;return`<div class="stage"><div class="stage-name">${s}</div><div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:${STAGE_COLORS[i]}"></div></div><div class="stage-count">${sc[s]}</div></div>`;}).join('');document.getElementById('client-tbody').innerHTML=clients.length?clients.map(c=>`<tr><td style="font-weight:500">${c.name}</td><td style="color:var(--text-muted);font-size:12px">${c.property||'—'}</td><td>${typeBadge(c.type)}</td><td>${stageBadge(c.stage)}</td><td>${srcHtml(c.source)}</td><td style="font-size:12px;color:var(--text-muted)">${c.next_action||'—'}</td><td>${clientBtns(c.id)}</td></tr>`).join(''):`<tr><td colspan="7" class="empty">No clients yet</td></tr>`;document.getElementById('all-count').textContent=clients.length;document.getElementById('all-tbody').innerHTML=clients.length?clients.map(c=>`<tr><td style="font-weight:500">${c.name}</td><td style="font-size:12px;color:var(--text-muted)">${c.phone||'—'}</td><td>${typeBadge(c.type)}</td><td>${stageBadge(c.stage)}</td><td>${srcHtml(c.source)}</td><td style="font-size:12px;color:var(--text-muted)">${c.added_date||'—'}</td><td>${clientBtns(c.id)}</td></tr>`).join(''):`<tr><td colspan="7" class="empty">No contacts yet</td></tr>`;const vol=closings.reduce((a,c)=>a+(c.price||0),0);const avg=closings.length?vol/closings.length:0;document.getElementById('closing-stats').innerHTML=[{label:'YTD Closings',val:closings.length,sub:'Transactions'},{label:'YTD Volume',val:fmtK(vol),sub:'Total sales',accent:true},{label:'Avg Sale Price',val:fmtK(avg),sub:'Per transaction'},{label:'GCI Est.',val:fmtK(vol*0.025),sub:'@ 2.5% avg'}].map(s=>`<div class="stat${s.accent?' accent':''}"><div class="stat-label">${s.label}</div><div class="stat-value">${s.val}</div><div class="stat-sub">${s.sub}</div></div>`).join('');document.getElementById('closing-tbody').innerHTML=closings.length?closings.map(c=>`<tr><td style="font-weight:500">${c.name}</td><td style="font-size:12px;color:var(--text-muted)">${c.property||'—'}</td><td>${typeBadge(c.type)}</td><td style="font-weight:500">${fmt(c.price||0)}</td><td style="font-size:12px">${fmtD(c.coe)}</td><td>${srcHtml(c.source)}</td><td>${closingBtns(c.id)}</td></tr>`).join(''):`<tr><td colspan="7" class="empty">No closings yet</td></tr>`;}
-function showTab(t){document.querySelectorAll('.section').forEach(el=>el.classList.remove('active'));document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));document.getElementById('tab-'+t).classList.add('active');document.querySelectorAll('.tab').forEach((el,i)=>{if(['pipeline','clients','closings','netsheet'][i]===t)el.classList.add('active');});}
-function openModal(){document.getElementById('f-id').value='';document.getElementById('modal-title').textContent='Add new client';['f-name','f-phone','f-property','f-next'].forEach(i=>document.getElementById(i).value='');document.getElementById('f-type').value='buyer';document.getElementById('f-stage').value='Lead Start';document.getElementById('f-source').value='Referral';document.getElementById('client-modal').classList.add('open');}
+
+function toggleSellerFields(){
+  const type=document.getElementById('f-type').value;
+  document.getElementById('seller-section').style.display=type==='seller'?'block':'none';
+}
+
+function render(){
+  const activeClients=clients.filter(c=>c.stage!=='Closed');
+  const sc={};STAGES.forEach(s=>sc[s]=0);
+  activeClients.forEach(c=>{if(sc[c.stage]!==undefined)sc[c.stage]++;});
+  const total=activeClients.length;
+  const totalVol=closings.reduce((a,c)=>a+(c.price||0),0);
+  const totalGCI=closings.reduce((a,c)=>a+commAmt(c.price||0,c.commission||0),0);
+  const pipelineGCI=clients.filter(c=>c.type==='seller'&&c.sale_price&&c.commission).reduce((a,c)=>a+commAmt(c.sale_price||0,c.commission||0),0);
+
+  document.getElementById('kpi-grid').innerHTML=[
+    {label:'Active clients',val:total,sub:'In pipeline',cls:'blue'},
+    {label:'Pipeline GCI',val:fmtK(pipelineGCI),sub:'Potential commission',cls:'accent'},
+    {label:'YTD Closings',val:closings.length,sub:'Transactions',cls:''},
+    {label:'YTD Volume',val:fmtK(totalVol),sub:'Total sales',cls:''},
+    {label:'YTD GCI',val:fmtK(totalGCI),sub:'Earned commission',cls:'green'},
+    {label:'Avg Sale Price',val:closings.length?fmtK(totalVol/closings.length):'$0',sub:'Per closing',cls:''},
+  ].map(k=>`<div class="kpi ${k.cls}"><div class="kpi-label">${k.label}</div><div class="kpi-value">${k.val}</div><div class="kpi-sub">${k.sub}</div></div>`).join('');
+
+  document.getElementById('recent-tbody').innerHTML=activeClients.slice(0,8).map(c=>`<tr>
+    <td style="font-weight:500">${c.name}</td><td>${stageBadge(c.stage)}</td>
+    <td>${typeBadge(c.type)}</td><td>${srcHtml(c.source)}</td>
+    <td style="font-size:12px;color:var(--text-muted)">${c.next_action||'—'}</td>
+  </tr>`).join('')||`<tr><td colspan="5" class="empty">No active clients yet</td></tr>`;
+
+  document.getElementById('all-count').textContent=clients.length;
+  document.getElementById('client-tbody').innerHTML=clients.length?clients.map(c=>`<tr>
+    <td style="font-weight:500">${c.name}</td>
+    <td><div class="addr">${fmtAddr(c)}</div></td>
+    <td>${typeBadge(c.type)}</td><td>${stageBadge(c.stage)}</td>
+    <td style="font-size:12px">${c.sale_price?fmt(c.sale_price):'—'}</td>
+    <td style="font-size:12px">${c.commission?c.commission+'%':'—'}</td>
+    <td>${srcHtml(c.source)}</td><td>${clientBtns(c.id)}</td>
+  </tr>`).join(''):`<tr><td colspan="8" class="empty">No clients yet</td></tr>`;
+
+  const vol=closings.reduce((a,c)=>a+(c.price||0),0);
+  const avg=closings.length?vol/closings.length:0;
+  document.getElementById('closing-kpis').innerHTML=[
+    {label:'YTD Closings',val:closings.length,sub:'Transactions'},
+    {label:'YTD Volume',val:fmtK(vol),sub:'Total sales',cls:'accent'},
+    {label:'YTD GCI',val:fmtK(totalGCI),sub:'Commission earned',cls:'green'},
+    {label:'Avg Commission',val:closings.length?fmtK(totalGCI/closings.length):'$0',sub:'Per closing'},
+  ].map(k=>`<div class="kpi ${k.cls||''}"><div class="kpi-label">${k.label}</div><div class="kpi-value">${k.val}</div><div class="kpi-sub">${k.sub}</div></div>`).join('');
+
+  document.getElementById('closing-tbody').innerHTML=closings.length?closings.map(c=>`<tr>
+    <td style="font-weight:500">${c.name}</td>
+    <td><div class="addr">${fmtAddr(c)}</div></td>
+    <td>${typeBadge(c.type)}</td>
+    <td style="font-weight:500">${fmt(c.price||0)}</td>
+    <td style="font-size:12px">${c.commission?c.commission+'% = '+fmt(commAmt(c.price||0,c.commission)):'—'}</td>
+    <td style="font-size:12px">${fmtD(c.coe)}</td>
+    <td>${srcHtml(c.source)}</td><td>${closingBtns(c.id)}</td>
+  </tr>`).join(''):`<tr><td colspan="8" class="empty">No closings yet</td></tr>`;
+
+  renderCharts(sc);
+}
+
+function renderCharts(sc){
+  if(stageChart)stageChart.destroy();
+  stageChart=new Chart(document.getElementById('stage-chart').getContext('2d'),{type:'doughnut',data:{labels:STAGES,datasets:[{data:STAGES.map(s=>sc[s]),backgroundColor:STAGE_COLORS,borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12}}}}});
+
+  if(gciChart)gciChart.destroy();
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const gciByMonth=new Array(12).fill(0);
+  closings.forEach(c=>{if(c.coe){const m=new Date(c.coe+'T12:00:00').getMonth();gciByMonth[m]+=commAmt(c.price||0,c.commission||0);}});
+  gciChart=new Chart(document.getElementById('gci-chart').getContext('2d'),{type:'bar',data:{labels:months,datasets:[{label:'GCI',data:gciByMonth.map(v=>Math.round(v)),backgroundColor:'#c8602a99',borderColor:'#c8602a',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fmtK(v)},grid:{color:'rgba(0,0,0,0.05)'}},x:{grid:{display:false}}}}});
+
+  if(sourceChart)sourceChart.destroy();
+  const srcCounts={};clients.forEach(c=>{srcCounts[c.source]=(srcCounts[c.source]||0)+1;});
+  const srcLabels=Object.keys(srcCounts);
+  sourceChart=new Chart(document.getElementById('source-chart').getContext('2d'),{type:'pie',data:{labels:srcLabels.length?srcLabels:['No data'],datasets:[{data:srcLabels.length?srcLabels.map(s=>srcCounts[s]):[1],backgroundColor:srcLabels.length?srcLabels.map(s=>SRC_COLORS[s]||'#888'):['#e0e0e0'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12}}}}});
+
+  if(typeChart)typeChart.destroy();
+  const buyers=clients.filter(c=>c.type==='buyer').length;
+  const sellers=clients.filter(c=>c.type==='seller').length;
+  typeChart=new Chart(document.getElementById('type-chart').getContext('2d'),{type:'doughnut',data:{labels:['Buyers','Sellers'],datasets:[{data:[buyers||0,sellers||0],backgroundColor:['#2563a8','#c8602a'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:12},boxWidth:14}}}}});
+}
+
+function showTab(t){
+  document.querySelectorAll('.section').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  document.querySelectorAll('.tab').forEach((el,i)=>{if(['dashboard','clients','closings','netsheet'][i]===t)el.classList.add('active');});
+}
+
+function openModal(){
+  document.getElementById('f-id').value='';
+  document.getElementById('modal-title').textContent='Add new client';
+  ['f-name','f-phone','f-street','f-city','f-next','f-price','f-commission','f-zip'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('f-state').value='CA';
+  document.getElementById('f-type').value='buyer';
+  document.getElementById('f-stage').value='Lead Start';
+  document.getElementById('f-source').value='Referral';
+  document.getElementById('seller-section').style.display='none';
+  document.getElementById('client-modal').classList.add('open');
+}
 function closeModal(){document.getElementById('client-modal').classList.remove('open');}
-function editClient(id){const c=clients.find(x=>x.id===id);if(!c)return;document.getElementById('modal-title').textContent='Edit client';document.getElementById('f-id').value=id;document.getElementById('f-name').value=c.name||'';document.getElementById('f-phone').value=c.phone||'';document.getElementById('f-property').value=c.property||'';document.getElementById('f-type').value=c.type||'buyer';document.getElementById('f-stage').value=c.stage||'Lead Start';document.getElementById('f-source').value=c.source||'Referral';document.getElementById('f-next').value=c.next_action||'';document.getElementById('client-modal').classList.add('open');}
-async function deleteClient(id){if(!confirm('Delete this client?'))return;await sb.from('clients').delete().eq('id',id);await loadClients();render();}
-async function saveClient(){const name=document.getElementById('f-name').value.trim();if(!name){alert('Please enter a client name.');return;}const btn=document.getElementById('save-client-btn');btn.disabled=true;btn.textContent='Saving...';const eid=document.getElementById('f-id').value;const payload={name,phone:document.getElementById('f-phone').value.trim(),property:document.getElementById('f-property').value.trim()||'TBD',type:document.getElementById('f-type').value,stage:document.getElementById('f-stage').value,source:document.getElementById('f-source').value,next_action:document.getElementById('f-next').value.trim(),user_id:currentUser.id};if(eid){await sb.from('clients').update(payload).eq('id',eid);}else{const today=new Date();payload.added_date=today.toLocaleDateString('en-US',{month:'short',day:'numeric'});await sb.from('clients').insert(payload);}await loadClients();render();closeModal();btn.disabled=false;btn.textContent='Save client';}
-function openClosingModal(){document.getElementById('c-id').value='';document.getElementById('closing-modal-title').textContent='Add closing';['c-name','c-property','c-price','c-coe'].forEach(i=>document.getElementById(i).value='');document.getElementById('c-type').value='seller';document.getElementById('c-source').value='Referral';document.getElementById('closing-modal').classList.add('open');}
+
+function editClient(id){
+  const c=clients.find(x=>x.id===id);if(!c)return;
+  document.getElementById('modal-title').textContent='Edit client';
+  document.getElementById('f-id').value=id;
+  document.getElementById('f-name').value=c.name||'';
+  document.getElementById('f-phone').value=c.phone||'';
+  document.getElementById('f-street').value=c.street||'';
+  document.getElementById('f-city').value=c.city||'';
+  document.getElementById('f-state').value=c.state||'CA';
+  document.getElementById('f-zip').value=c.zip||'';
+  document.getElementById('f-type').value=c.type||'buyer';
+  document.getElementById('f-stage').value=c.stage||'Lead Start';
+  document.getElementById('f-source').value=c.source||'Referral';
+  document.getElementById('f-next').value=c.next_action||'';
+  document.getElementById('f-price').value=c.sale_price||'';
+  document.getElementById('f-commission').value=c.commission||'';
+  document.getElementById('seller-section').style.display=c.type==='seller'?'block':'none';
+  document.getElementById('client-modal').classList.add('open');
+}
+
+async function deleteClient(id){
+  if(!confirm('Delete this client?'))return;
+  await sb.from('clients').delete().eq('id',id);
+  await loadClients();render();
+}
+
+async function saveClient(){
+  const name=document.getElementById('f-name').value.trim();
+  if(!name){alert('Please enter a client name.');return;}
+  const btn=document.getElementById('save-client-btn');
+  btn.disabled=true;btn.textContent='Saving...';
+  try{
+    const eid=document.getElementById('f-id').value;
+    const stage=document.getElementById('f-stage').value;
+    const type=document.getElementById('f-type').value;
+    const salePrice=parseFloat(document.getElementById('f-price').value)||null;
+    const commission=parseFloat(document.getElementById('f-commission').value)||null;
+    const street=document.getElementById('f-street').value.trim();
+    const city=document.getElementById('f-city').value.trim();
+    const state=document.getElementById('f-state').value.trim();
+    const zip=document.getElementById('f-zip').value.trim();
+    const property=[street,city,state,zip].filter(Boolean).join(', ');
+    const source=document.getElementById('f-source').value;
+
+    const payload={name,phone:document.getElementById('f-phone').value.trim(),street,city,state,zip,property,type,stage,source,next_action:document.getElementById('f-next').value.trim(),sale_price:salePrice,commission,user_id:currentUser.id};
+
+    if(eid){
+      await sb.from('clients').update(payload).eq('id',eid);
+    }else{
+      payload.added_date=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});
+      await sb.from('clients').insert(payload);
+    }
+
+    // Auto-create closing when stage = Closed
+    if(stage==='Closed'){
+      // Check if closing already exists for this client
+      const existingClosing=closings.find(c=>c.name===name&&c.street===street);
+      if(!existingClosing){
+        const closingPayload={
+          name,street,city,state,zip,property,type,
+          price:salePrice||0,
+          commission:commission||0,
+          coe:new Date().toISOString().split('T')[0],
+          source,
+          user_id:currentUser.id
+        };
+        await sb.from('closings').insert(closingPayload);
+      }
+    }
+
+    await loadAll();
+    closeModal();
+  }catch(e){
+    alert('Error saving: '+e.message);
+  }
+  btn.disabled=false;btn.textContent='Save client';
+}
+
+function openClosingModal(){
+  document.getElementById('c-id').value='';
+  document.getElementById('closing-modal-title').textContent='Add closing';
+  ['c-name','c-street','c-city','c-zip','c-price','c-coe','c-commission'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('c-state').value='CA';
+  document.getElementById('c-type').value='seller';
+  document.getElementById('c-source').value='Referral';
+  document.getElementById('closing-modal').classList.add('open');
+}
 function closeClosingModal(){document.getElementById('closing-modal').classList.remove('open');}
-function editClosing(id){const c=closings.find(x=>x.id===id);if(!c)return;document.getElementById('closing-modal-title').textContent='Edit closing';document.getElementById('c-id').value=id;document.getElementById('c-name').value=c.name||'';document.getElementById('c-property').value=c.property||'';document.getElementById('c-type').value=c.type||'seller';document.getElementById('c-price').value=c.price||'';document.getElementById('c-coe').value=c.coe||'';document.getElementById('c-source').value=c.source||'Referral';document.getElementById('closing-modal').classList.add('open');}
-async function deleteClosing(id){if(!confirm('Delete this closing?'))return;await sb.from('closings').delete().eq('id',id);await loadClosings();render();}
-async function saveClosing(){const name=document.getElementById('c-name').value.trim();if(!name){alert('Please enter a client name.');return;}const btn=document.getElementById('save-closing-btn');btn.disabled=true;btn.textContent='Saving...';const eid=document.getElementById('c-id').value;const payload={name,property:document.getElementById('c-property').value.trim()||'TBD',type:document.getElementById('c-type').value,price:parseFloat(document.getElementById('c-price').value)||0,coe:document.getElementById('c-coe').value,source:document.getElementById('c-source').value,user_id:currentUser.id};if(eid){await sb.from('closings').update(payload).eq('id',eid);}else{await sb.from('closings').insert(payload);}await loadClosings();render();closeClosingModal();btn.disabled=false;btn.textContent='Save closing';}
+
+function editClosing(id){
+  const c=closings.find(x=>x.id===id);if(!c)return;
+  document.getElementById('closing-modal-title').textContent='Edit closing';
+  document.getElementById('c-id').value=id;
+  document.getElementById('c-name').value=c.name||'';
+  document.getElementById('c-street').value=c.street||'';
+  document.getElementById('c-city').value=c.city||'';
+  document.getElementById('c-state').value=c.state||'CA';
+  document.getElementById('c-zip').value=c.zip||'';
+  document.getElementById('c-type').value=c.type||'seller';
+  document.getElementById('c-price').value=c.price||'';
+  document.getElementById('c-commission').value=c.commission||'';
+  document.getElementById('c-coe').value=c.coe||'';
+  document.getElementById('c-source').value=c.source||'Referral';
+  document.getElementById('closing-modal').classList.add('open');
+}
+
+async function deleteClosing(id){
+  if(!confirm('Delete this closing?'))return;
+  await sb.from('closings').delete().eq('id',id);
+  await loadClosings();render();
+}
+
+async function saveClosing(){
+  const name=document.getElementById('c-name').value.trim();
+  if(!name){alert('Please enter a client name.');return;}
+  const btn=document.getElementById('save-closing-btn');
+  btn.disabled=true;btn.textContent='Saving...';
+  try{
+    const eid=document.getElementById('c-id').value;
+    const street=document.getElementById('c-street').value.trim();
+    const city=document.getElementById('c-city').value.trim();
+    const state=document.getElementById('c-state').value.trim();
+    const zip=document.getElementById('c-zip').value.trim();
+    const property=[street,city,state,zip].filter(Boolean).join(', ');
+    const payload={name,street,city,state,zip,property,type:document.getElementById('c-type').value,price:parseFloat(document.getElementById('c-price').value)||0,commission:parseFloat(document.getElementById('c-commission').value)||0,coe:document.getElementById('c-coe').value,source:document.getElementById('c-source').value,user_id:currentUser.id};
+    if(eid){await sb.from('closings').update(payload).eq('id',eid);}
+    else{await sb.from('closings').insert(payload);}
+    await loadClosings();render();closeClosingModal();
+  }catch(e){alert('Error saving: '+e.message);}
+  btn.disabled=false;btn.textContent='Save closing';
+}
+
 document.getElementById('client-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
 document.getElementById('closing-modal').addEventListener('click',function(e){if(e.target===this)closeClosingModal();});
 document.getElementById('auth-email').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('auth-password').focus();});
 document.getElementById('auth-password').addEventListener('keydown',e=>{if(e.key==='Enter')handleAuth();});
-function calcNet(){const price=gv('ns-price'),payoff=gv('ns-payoff'),heloc=gv('ns-heloc');const listPct=gv('ns-list-pct'),buyPct=gv('ns-buy-pct');const title=gv('ns-title'),transfer=gv('ns-transfer'),hoa=gv('ns-hoa');const warranty=gv('ns-warranty'),staging=gv('ns-staging'),repairs=gv('ns-repairs'),other=gv('ns-other');const listComm=price*(listPct/100),buyComm=price*(buyPct/100);const net=price-payoff-heloc-listComm-buyComm-title-transfer-hoa-warranty-staging-repairs-other;const set=(id,v,neg)=>{const el=document.getElementById(id);el.textContent=(neg?'— ':'')+fmt(v);};set('r-price',price);set('r-payoff',payoff,true);set('r-heloc',heloc,true);set('r-list-comm',listComm,true);set('r-buy-comm',buyComm,true);set('r-title',title,true);set('r-transfer',transfer,true);set('r-hoa',hoa,true);set('r-warranty',warranty,true);set('r-staging',staging,true);set('r-repairs',repairs,true);set('r-other',other,true);const netEl=document.getElementById('r-net');netEl.textContent=fmt(net);netEl.style.color=net<0?'var(--red)':'var(--accent)';}
-function resetNet(){['ns-seller','ns-address','ns-price','ns-payoff','ns-heloc','ns-coe','ns-title','ns-transfer','ns-hoa','ns-warranty','ns-staging','ns-repairs','ns-other'].forEach(id=>document.getElementById(id).value='');document.getElementById('ns-list-pct').value='2.5';document.getElementById('ns-buy-pct').value='2.5';calcNet();}
+
+function calcNet(){
+  const price=gv('ns-price'),payoff=gv('ns-payoff'),heloc=gv('ns-heloc');
+  const listPct=gv('ns-list-pct'),buyPct=gv('ns-buy-pct');
+  const title=gv('ns-title'),transfer=gv('ns-transfer'),hoa=gv('ns-hoa');
+  const warranty=gv('ns-warranty'),staging=gv('ns-staging'),repairs=gv('ns-repairs'),other=gv('ns-other');
+  const listComm=price*(listPct/100),buyComm=price*(buyPct/100);
+  const net=price-payoff-heloc-listComm-buyComm-title-transfer-hoa-warranty-staging-repairs-other;
+  const set=(id,v,neg)=>{const el=document.getElementById(id);el.textContent=(neg?'— ':'')+fmt(v);};
+  set('r-price',price);set('r-payoff',payoff,true);set('r-heloc',heloc,true);
+  set('r-list-comm',listComm,true);set('r-buy-comm',buyComm,true);
+  set('r-title',title,true);set('r-transfer',transfer,true);set('r-hoa',hoa,true);
+  set('r-warranty',warranty,true);set('r-staging',staging,true);set('r-repairs',repairs,true);set('r-other',other,true);
+  const netEl=document.getElementById('r-net');
+  netEl.textContent=fmt(net);
+  netEl.style.color=net<0?'var(--red)':'var(--accent)';
+}
+function resetNet(){
+  ['ns-seller','ns-street','ns-city','ns-state','ns-zip','ns-price','ns-payoff','ns-heloc','ns-coe','ns-title','ns-transfer','ns-hoa','ns-warranty','ns-staging','ns-repairs','ns-other'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ns-list-pct').value='2.5';
+  document.getElementById('ns-buy-pct').value='2.5';
+  calcNet();
+}
 calcNet();
 </script>
 </body>
