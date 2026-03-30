@@ -108,7 +108,7 @@
   .empty { text-align: center; padding: 3rem; color: var(--text-faint); font-size: 14px; }
   .loading { text-align: center; padding: 2rem; color: var(--text-faint); font-size: 13px; }
   .addr { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
-  .lost-row { opacity: 0.7; }
+  .section-divider { grid-column: 1/-1; border-top: 1px solid var(--border); padding-top: 12px; margin-top: 4px; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
   .net-sheet { max-width: 700px; }
   .ns-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.25rem; }
   .ns-card h3 { font-family: var(--font-display); font-size: 17px; font-weight: 400; margin-bottom: 1rem; }
@@ -154,6 +154,7 @@
 </head>
 <body>
 
+<!-- AUTH -->
 <div id="auth-screen" class="auth-wrap">
   <div class="auth-card">
     <div class="auth-brand">Andrew Perez — <em>Pipeline</em></div>
@@ -167,10 +168,13 @@
     <div class="form-group"><label>Email</label><input id="auth-email" type="email" placeholder="andrew@aprealtor.co" /></div>
     <div class="form-group"><label>Password</label><input id="auth-password" type="password" placeholder="••••••••" /></div>
     <button class="btn primary" id="auth-btn" onclick="handleAuth()" style="width:100%;justify-content:center;">Sign in</button>
-    <div style="text-align:center;margin-top:1rem;"><span style="font-size:12px;color:var(--text-faint);cursor:pointer;text-decoration:underline;" onclick="handleForgot()">Forgot password?</span></div>
+    <div style="text-align:center;margin-top:1rem;">
+      <span style="font-size:12px;color:var(--text-faint);cursor:pointer;text-decoration:underline;" onclick="handleForgot()">Forgot password?</span>
+    </div>
   </div>
 </div>
 
+<!-- APP -->
 <div id="app" style="display:none">
   <div class="header">
     <div class="header-top">
@@ -189,6 +193,7 @@
     </div>
   </div>
 
+  <!-- DASHBOARD -->
   <div id="tab-dashboard" class="section active">
     <div class="kpi-grid" id="kpi-grid"></div>
     <div class="charts-grid">
@@ -207,17 +212,19 @@
     </div>
   </div>
 
+  <!-- CLIENTS -->
   <div id="tab-clients" class="section">
     <div class="table-header">
       <div class="section-label" style="margin:0">All contacts · <span id="all-count">0</span></div>
       <button class="btn primary" onclick="openModal()">+ Add client</button>
     </div>
     <div class="table-wrap">
-      <table><thead><tr><th>Client</th><th>Address</th><th>Type</th><th>Stage</th><th>Sale Price</th><th>Commission</th><th>Source</th><th></th></tr></thead>
-      <tbody id="client-tbody"><tr><td colspan="8" class="loading">Loading...</td></tr></tbody></table>
+      <table><thead><tr><th>Client</th><th>Address</th><th>Type</th><th>Stage</th><th>Price</th><th>Commission</th><th>COE</th><th>Source</th><th></th></tr></thead>
+      <tbody id="client-tbody"><tr><td colspan="9" class="loading">Loading...</td></tr></tbody></table>
     </div>
   </div>
 
+  <!-- CLOSINGS -->
   <div id="tab-closings" class="section">
     <div class="kpi-grid" id="closing-kpis"></div>
     <div class="table-header">
@@ -230,17 +237,19 @@
     </div>
   </div>
 
+  <!-- LOST DEALS -->
   <div id="tab-lost" class="section">
     <div class="kpi-grid" id="lost-kpis"></div>
     <div class="table-header">
       <div class="section-label" style="margin:0">Lost deals</div>
     </div>
     <div class="table-wrap">
-      <table><thead><tr><th>Client</th><th>Address</th><th>Type</th><th>Reason</th><th>Source</th><th></th></tr></thead>
-      <tbody id="lost-tbody"><tr><td colspan="6" class="loading">Loading...</td></tr></tbody></table>
+      <table><thead><tr><th>Client</th><th>Address</th><th>Type</th><th>Last stage</th><th>Reason lost</th><th>Price</th><th>Source</th><th></th></tr></thead>
+      <tbody id="lost-tbody"><tr><td colspan="8" class="loading">Loading...</td></tr></tbody></table>
     </div>
   </div>
 
+  <!-- NET SHEET -->
   <div id="tab-netsheet" class="section">
     <div class="net-sheet">
       <div class="ns-card">
@@ -317,10 +326,11 @@
   <div class="modal">
     <h3 id="modal-title">Add new client</h3>
     <input type="hidden" id="f-id" />
+    <input type="hidden" id="f-prev-stage" />
     <div class="form-grid">
       <div class="fg full"><label>Full name</label><input id="f-name" placeholder="Jane & John Doe" /></div>
       <div class="fg"><label>Phone</label><input id="f-phone" placeholder="661-555-0000" /></div>
-      <div class="fg"><label>Type</label><select id="f-type" onchange="toggleSellerFields()"><option value="buyer">Buyer</option><option value="seller">Seller</option></select></div>
+      <div class="fg"><label>Type</label><select id="f-type"><option value="buyer">Buyer</option><option value="seller">Seller</option></select></div>
       <div class="fg full"><label>Street address</label><input id="f-street" placeholder="123 Oak St" /></div>
       <div class="fg full" style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;">
         <div class="fg"><label>City</label><input id="f-city" placeholder="Bakersfield" /></div>
@@ -328,7 +338,7 @@
         <div class="fg"><label>Zip</label><input id="f-zip" placeholder="93301" /></div>
       </div>
       <div class="fg"><label>Stage</label>
-        <select id="f-stage" onchange="toggleLostField()">
+        <select id="f-stage" onchange="toggleLostReason()">
           <option>Lead Start</option><option>Nurture</option><option>Buyers</option>
           <option>Pre-List</option><option>Active Listings</option><option>In Escrow</option>
           <option>Closed</option><option>Lost</option>
@@ -337,24 +347,24 @@
       <div class="fg"><label>Source</label>
         <select id="f-source"><option>Referral</option><option>Past client</option><option>Zillow</option><option>Instagram</option><option>Open house</option><option>Sign call</option><option>Database</option></select>
       </div>
-      <div class="fg full"><label>Next action</label><input id="f-next" placeholder="Schedule showing Saturday" /></div>
-      <div class="fg full" id="lost-reason-wrap" style="display:none;">
-        <label>Reason for loss</label>
-        <select id="f-lost-reason">
-          <option value="">Select a reason...</option>
-          <option value="Went with another agent">Went with another agent</option>
-          <option value="Deal fell through">Deal fell through</option>
-          <option value="Lead went cold">Lead went cold</option>
-          <option value="No longer buying/selling">No longer buying/selling</option>
-          <option value="Price disagreement">Price disagreement</option>
-          <option value="Other">Other</option>
-        </select>
-      </div>
-      <div id="seller-section-wrap" style="display:none;grid-column:1/-1;">
-        <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px;margin-bottom:12px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent);">Seller details</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-          <div class="fg"><label>Sale / List price ($)</label><input id="f-price" type="number" min="0" placeholder="450000" /></div>
-          <div class="fg"><label>Your commission (%)</label><input id="f-commission" type="number" min="0" step="0.1" placeholder="2.5" /></div>
+      <div class="fg"><label>Sale / Purchase price ($)</label><input id="f-price" type="number" min="0" placeholder="450000" /></div>
+      <div class="fg"><label>Commission (%)</label><input id="f-commission" type="number" min="0" step="0.1" placeholder="2.5" /></div>
+      <div class="fg"><label>Close of escrow</label><input id="f-coe" type="date" /></div>
+      <div class="fg"><label>Next action</label><input id="f-next" placeholder="Schedule showing Saturday" /></div>
+      <div id="lost-reason-section" style="display:none;grid-column:1/-1;">
+        <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px;margin-bottom:12px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--red);">Reason lost</div>
+        <div class="fg full">
+          <label>Why did this deal not close?</label>
+          <select id="f-lost-reason">
+            <option value="">Select a reason...</option>
+            <option>Went with another agent</option>
+            <option>Deal fell through</option>
+            <option>Lead went cold</option>
+            <option>Could not find a home</option>
+            <option>Not ready to buy/sell</option>
+            <option>Price disagreement</option>
+            <option>Other</option>
+          </select>
         </div>
       </div>
     </div>
@@ -414,12 +424,13 @@ async function handleAuth(){
   const btn=document.getElementById('auth-btn');
   if(!email||!password){showAuthError('Please enter your email and password.');return;}
   btn.disabled=true;btn.textContent=authMode==='login'?'Signing in...':'Creating account...';
+  document.getElementById('auth-error').style.display='none';
   try{
     let result;
     if(authMode==='login'){result=await sb.auth.signInWithPassword({email,password});}
     else{result=await sb.auth.signUp({email,password});if(!result.error&&result.data.user&&!result.data.session){showAuthSuccess('Check your email to confirm your account, then sign in.');btn.disabled=false;btn.textContent='Create account';return;}}
     if(result.error){showAuthError(result.error.message);}
-  }catch(e){showAuthError('Something went wrong.');}
+  }catch(e){showAuthError('Something went wrong. Please try again.');}
   btn.disabled=false;btn.textContent=authMode==='login'?'Sign in':'Create account';
 }
 
@@ -431,9 +442,16 @@ async function handleForgot(){
 }
 
 document.getElementById('signout-btn').addEventListener('click',async function(){
-  this.textContent='Signing out...';this.disabled=true;
-  await sb.auth.signOut();
-  this.textContent='Sign out';this.disabled=false;
+  try{this.textContent='Signing out...';this.disabled=true;await sb.auth.signOut();}
+  catch(e){console.log('signout error',e);}
+  finally{
+    currentUser=null;clients=[];closings=[];
+    document.getElementById('app').style.display='none';
+    document.getElementById('auth-screen').style.display='flex';
+    document.getElementById('auth-email').value='';
+    document.getElementById('auth-password').value='';
+    this.textContent='Sign out';this.disabled=false;
+  }
 });
 
 sb.auth.onAuthStateChange(async(event,session)=>{
@@ -441,8 +459,6 @@ sb.auth.onAuthStateChange(async(event,session)=>{
     currentUser=null;clients=[];closings=[];
     document.getElementById('app').style.display='none';
     document.getElementById('auth-screen').style.display='flex';
-    document.getElementById('auth-email').value='';
-    document.getElementById('auth-password').value='';
     return;
   }
   if(event==='SIGNED_IN'&&session?.user){
@@ -455,29 +471,25 @@ sb.auth.onAuthStateChange(async(event,session)=>{
 });
 
 async function loadAll(){await Promise.all([loadClients(),loadClosings()]);render();}
-async function loadClients(){const{data,error}=await sb.from('clients').select('*').order('created_at',{ascending:false});if(!error)clients=data||[];}
-async function loadClosings(){const{data,error}=await sb.from('closings').select('*').order('created_at',{ascending:false});if(!error)closings=data||[];}
+async function loadClients(){const{data,error}=await sb.from('clients').select('*').order('created_at',{ascending:false});if(!error&&data)clients=data;}
+async function loadClosings(){const{data,error}=await sb.from('closings').select('*').order('created_at',{ascending:false});if(!error&&data)closings=data;}
 
 const fmt=n=>'$'+Math.round(n).toLocaleString();
 const fmtK=n=>n>=1000000?'$'+(n/1000000).toFixed(1)+'M':'$'+Math.round(n/1000)+'K';
-const fmtD=s=>{if(!s)return'—';const d=new Date(s+'T12:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});};
+const fmtD=s=>{if(!s)return'—';try{const d=new Date(s+'T12:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});}catch(e){return s;}};
 const gv=id=>parseFloat(document.getElementById(id).value)||0;
 const commAmt=(price,pct)=>price*(pct/100);
 const fmtAddr=c=>{const parts=[c.street,[c.city,c.state].filter(Boolean).join(', '),c.zip].filter(Boolean);return parts.length?parts.join(' '):c.property||'—';};
 
 function stageBadge(s){const m={'Lead Start':'b-lead','Nurture':'b-nurture','Buyers':'b-buyers','Pre-List':'b-prelist','Active Listings':'b-listings','In Escrow':'b-escrow','Closed':'b-closed','Lost':'b-lost'};return`<span class="badge ${m[s]||'b-lead'}">${s}</span>`;}
 function typeBadge(t){return`<span class="badge ${t==='buyer'?'b-buyer':'b-seller'}">${t==='buyer'?'Buyer':'Seller'}</span>`;}
-function srcHtml(s){return`<div class="src"><div class="dot" style="background:${SRC_COLORS[s]||'#888'}"></div>${s}</div>`;}
+function srcHtml(s){return`<div class="src"><div class="dot" style="background:${SRC_COLORS[s]||'#888'}"></div>${s||'—'}</div>`;}
 function clientBtns(id){return`<div class="action-btns"><button class="btn sm" onclick="editClient('${id}')">Edit</button><button class="btn sm danger" onclick="deleteClient('${id}')">Delete</button></div>`;}
 function closingBtns(id){return`<div class="action-btns"><button class="btn sm" onclick="editClosing('${id}')">Edit</button><button class="btn sm danger" onclick="deleteClosing('${id}')">Delete</button></div>`;}
 
-function toggleSellerFields(){
-  const type=document.getElementById('f-type').value;
-  document.getElementById('seller-section-wrap').style.display=type==='seller'?'block':'none';
-}
-function toggleLostField(){
+function toggleLostReason(){
   const stage=document.getElementById('f-stage').value;
-  document.getElementById('lost-reason-wrap').style.display=stage==='Lost'?'block':'none';
+  document.getElementById('lost-reason-section').style.display=stage==='Lost'?'block':'none';
 }
 
 function render(){
@@ -487,15 +499,15 @@ function render(){
   activeClients.forEach(c=>{if(sc[c.stage]!==undefined)sc[c.stage]++;});
   const totalVol=closings.reduce((a,c)=>a+(c.price||0),0);
   const totalGCI=closings.reduce((a,c)=>a+commAmt(c.price||0,c.commission||0),0);
-  const pipelineGCI=activeClients.filter(c=>c.type==='seller'&&c.sale_price&&c.commission).reduce((a,c)=>a+commAmt(c.sale_price||0,c.commission||0),0);
+  const pipelineGCI=activeClients.filter(c=>c.sale_price&&c.commission).reduce((a,c)=>a+commAmt(c.sale_price||0,c.commission||0),0);
 
   document.getElementById('kpi-grid').innerHTML=[
     {label:'Active clients',val:activeClients.length,sub:'In pipeline',cls:'blue'},
     {label:'Pipeline GCI',val:fmtK(pipelineGCI),sub:'Potential commission',cls:'accent'},
     {label:'YTD Closings',val:closings.length,sub:'Transactions',cls:''},
     {label:'YTD GCI',val:fmtK(totalGCI),sub:'Earned commission',cls:'green'},
-    {label:'Lost Deals',val:lostClients.length,sub:'This year',cls:'red'},
-    {label:'Avg Sale Price',val:closings.length?fmtK(totalVol/closings.length):'$0',sub:'Per closing',cls:''},
+    {label:'Lost deals',val:lostClients.length,sub:'This year',cls:'red'},
+    {label:'YTD Volume',val:fmtK(totalVol),sub:'Total sales',cls:''},
   ].map(k=>`<div class="kpi ${k.cls}"><div class="kpi-label">${k.label}</div><div class="kpi-value">${k.val}</div><div class="kpi-sub">${k.sub}</div></div>`).join('');
 
   document.getElementById('recent-tbody').innerHTML=activeClients.slice(0,8).map(c=>`<tr>
@@ -505,14 +517,15 @@ function render(){
   </tr>`).join('')||`<tr><td colspan="5" class="empty">No active clients yet</td></tr>`;
 
   document.getElementById('all-count').textContent=clients.length;
-  document.getElementById('client-tbody').innerHTML=clients.length?clients.map(c=>`<tr class="${c.stage==='Lost'?'lost-row':''}">
+  document.getElementById('client-tbody').innerHTML=clients.length?clients.map(c=>`<tr>
     <td style="font-weight:500">${c.name}</td>
     <td><div class="addr">${fmtAddr(c)}</div></td>
     <td>${typeBadge(c.type)}</td><td>${stageBadge(c.stage)}</td>
     <td style="font-size:12px">${c.sale_price?fmt(c.sale_price):'—'}</td>
     <td style="font-size:12px">${c.commission?c.commission+'%':'—'}</td>
+    <td style="font-size:12px">${fmtD(c.coe)}</td>
     <td>${srcHtml(c.source)}</td><td>${clientBtns(c.id)}</td>
-  </tr>`).join(''):`<tr><td colspan="8" class="empty">No clients yet</td></tr>`;
+  </tr>`).join(''):`<tr><td colspan="9" class="empty">No clients yet</td></tr>`;
 
   const vol=closings.reduce((a,c)=>a+(c.price||0),0);
   document.getElementById('closing-kpis').innerHTML=[
@@ -532,47 +545,48 @@ function render(){
     <td>${srcHtml(c.source)}</td><td>${closingBtns(c.id)}</td>
   </tr>`).join(''):`<tr><td colspan="8" class="empty">No closings yet</td></tr>`;
 
-  const lostByReason={};
-  lostClients.forEach(c=>{const r=c.lost_reason||'Unknown';lostByReason[r]=(lostByReason[r]||0)+1;});
-  const topReason=Object.entries(lostByReason).sort((a,b)=>b[1]-a[1])[0];
+  const lostVol=lostClients.reduce((a,c)=>a+(c.sale_price||0),0);
+  const lostGCI=lostClients.filter(c=>c.sale_price&&c.commission).reduce((a,c)=>a+commAmt(c.sale_price||0,c.commission||0),0);
   document.getElementById('lost-kpis').innerHTML=[
-    {label:'Total lost',val:lostClients.length,sub:'All time',cls:'red'},
-    {label:'Top reason',val:topReason?topReason[1]:'0',sub:topReason?topReason[0]:'No data yet',cls:''},
-    {label:'Lost buyers',val:lostClients.filter(c=>c.type==='buyer').length,sub:'Buyer leads',cls:''},
-    {label:'Lost sellers',val:lostClients.filter(c=>c.type==='seller').length,sub:'Seller leads',cls:''},
+    {label:'Lost deals',val:lostClients.length,sub:'Total',cls:'red'},
+    {label:'Lost volume',val:fmtK(lostVol),sub:'Potential sales lost'},
+    {label:'Lost GCI',val:fmtK(lostGCI),sub:'Commission lost'},
+    {label:'Win rate',val:closings.length+lostClients.length>0?Math.round((closings.length/(closings.length+lostClients.length))*100)+'%':'—',sub:'Closed vs lost',cls:'blue'},
   ].map(k=>`<div class="kpi ${k.cls||''}"><div class="kpi-label">${k.label}</div><div class="kpi-value">${k.val}</div><div class="kpi-sub">${k.sub}</div></div>`).join('');
 
   document.getElementById('lost-tbody').innerHTML=lostClients.length?lostClients.map(c=>`<tr>
     <td style="font-weight:500">${c.name}</td>
     <td><div class="addr">${fmtAddr(c)}</div></td>
     <td>${typeBadge(c.type)}</td>
+    <td>${stageBadge(c.prev_stage||'Lead Start')}</td>
     <td style="font-size:12px;color:var(--red)">${c.lost_reason||'—'}</td>
-    <td>${srcHtml(c.source)}</td>
-    <td>${clientBtns(c.id)}</td>
-  </tr>`).join(''):`<tr><td colspan="6" class="empty">No lost deals — great work!</td></tr>`;
+    <td style="font-size:12px">${c.sale_price?fmt(c.sale_price):'—'}</td>
+    <td>${srcHtml(c.source)}</td><td>${clientBtns(c.id)}</td>
+  </tr>`).join(''):`<tr><td colspan="8" class="empty">No lost deals — great work!</td></tr>`;
 
   renderCharts(sc);
 }
 
 function renderCharts(sc){
   if(stageChart)stageChart.destroy();
-  const sd=STAGES.map(s=>sc[s]);const hasData=sd.some(v=>v>0);
-  stageChart=new Chart(document.getElementById('stage-chart').getContext('2d'),{type:'doughnut',data:{labels:STAGES,datasets:[{data:hasData?sd:[1],backgroundColor:hasData?STAGE_COLORS:['#e0e0e0'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12}}}}});
+  stageChart=new Chart(document.getElementById('stage-chart').getContext('2d'),{type:'doughnut',data:{labels:STAGES,datasets:[{data:STAGES.map(s=>sc[s]),backgroundColor:STAGE_COLORS,borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12}}}}});
 
   if(gciChart)gciChart.destroy();
   const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const gciByMonth=new Array(12).fill(0);
-  closings.forEach(c=>{if(c.coe){const m=new Date(c.coe+'T12:00:00').getMonth();gciByMonth[m]+=commAmt(c.price||0,c.commission||0);}});
+  closings.forEach(c=>{if(c.coe){try{const m=new Date(c.coe+'T12:00:00').getMonth();gciByMonth[m]+=commAmt(c.price||0,c.commission||0);}catch(e){}}});
   gciChart=new Chart(document.getElementById('gci-chart').getContext('2d'),{type:'bar',data:{labels:months,datasets:[{label:'GCI',data:gciByMonth.map(v=>Math.round(v)),backgroundColor:'#c8602a99',borderColor:'#c8602a',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fmtK(v)},grid:{color:'rgba(0,0,0,0.05)'}},x:{grid:{display:false}}}}});
 
   if(sourceChart)sourceChart.destroy();
-  const srcCounts={};clients.filter(c=>c.stage!=='Lost').forEach(c=>{srcCounts[c.source]=(srcCounts[c.source]||0)+1;});
+  const activeSrc=clients.filter(c=>c.stage!=='Lost'&&c.stage!=='Closed');
+  const srcCounts={};activeSrc.forEach(c=>{if(c.source)srcCounts[c.source]=(srcCounts[c.source]||0)+1;});
   const srcLabels=Object.keys(srcCounts);
   sourceChart=new Chart(document.getElementById('source-chart').getContext('2d'),{type:'pie',data:{labels:srcLabels.length?srcLabels:['No data'],datasets:[{data:srcLabels.length?srcLabels.map(s=>srcCounts[s]):[1],backgroundColor:srcLabels.length?srcLabels.map(s=>SRC_COLORS[s]||'#888'):['#e0e0e0'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12}}}}});
 
   if(typeChart)typeChart.destroy();
-  const ac=clients.filter(c=>c.stage!=='Lost');
-  typeChart=new Chart(document.getElementById('type-chart').getContext('2d'),{type:'doughnut',data:{labels:['Buyers','Sellers'],datasets:[{data:[ac.filter(c=>c.type==='buyer').length||0,ac.filter(c=>c.type==='seller').length||0],backgroundColor:['#2563a8','#c8602a'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:12},boxWidth:14}}}}});
+  const buyers=clients.filter(c=>c.type==='buyer'&&c.stage!=='Lost').length;
+  const sellers=clients.filter(c=>c.type==='seller'&&c.stage!=='Lost').length;
+  typeChart=new Chart(document.getElementById('type-chart').getContext('2d'),{type:'doughnut',data:{labels:['Buyers','Sellers'],datasets:[{data:[buyers||0,sellers||0],backgroundColor:['#2563a8','#c8602a'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:12},boxWidth:14}}}}});
 }
 
 function showTab(t){
@@ -584,15 +598,15 @@ function showTab(t){
 
 function openModal(){
   document.getElementById('f-id').value='';
+  document.getElementById('f-prev-stage').value='';
   document.getElementById('modal-title').textContent='Add new client';
-  ['f-name','f-phone','f-street','f-city','f-next','f-price','f-commission','f-zip'].forEach(i=>document.getElementById(i).value='');
+  ['f-name','f-phone','f-street','f-city','f-next','f-price','f-commission','f-zip','f-coe'].forEach(i=>document.getElementById(i).value='');
   document.getElementById('f-state').value='CA';
   document.getElementById('f-type').value='buyer';
   document.getElementById('f-stage').value='Lead Start';
   document.getElementById('f-source').value='Referral';
   document.getElementById('f-lost-reason').value='';
-  document.getElementById('seller-section-wrap').style.display='none';
-  document.getElementById('lost-reason-wrap').style.display='none';
+  document.getElementById('lost-reason-section').style.display='none';
   document.getElementById('client-modal').classList.add('open');
 }
 function closeModal(){document.getElementById('client-modal').classList.remove('open');}
@@ -601,6 +615,7 @@ function editClient(id){
   const c=clients.find(x=>x.id===id);if(!c)return;
   document.getElementById('modal-title').textContent='Edit client';
   document.getElementById('f-id').value=id;
+  document.getElementById('f-prev-stage').value=c.stage||'';
   document.getElementById('f-name').value=c.name||'';
   document.getElementById('f-phone').value=c.phone||'';
   document.getElementById('f-street').value=c.street||'';
@@ -613,15 +628,16 @@ function editClient(id){
   document.getElementById('f-next').value=c.next_action||'';
   document.getElementById('f-price').value=c.sale_price||'';
   document.getElementById('f-commission').value=c.commission||'';
+  document.getElementById('f-coe').value=c.coe||'';
   document.getElementById('f-lost-reason').value=c.lost_reason||'';
-  document.getElementById('seller-section-wrap').style.display=c.type==='seller'?'block':'none';
-  document.getElementById('lost-reason-wrap').style.display=c.stage==='Lost'?'block':'none';
+  document.getElementById('lost-reason-section').style.display=c.stage==='Lost'?'block':'none';
   document.getElementById('client-modal').classList.add('open');
 }
 
 async function deleteClient(id){
   if(!confirm('Delete this client? This cannot be undone.'))return;
-  await sb.from('clients').delete().eq('id',id);
+  const{error}=await sb.from('clients').delete().eq('id',id);
+  if(error){alert('Error: '+error.message);return;}
   await loadClients();render();
 }
 
@@ -632,6 +648,7 @@ async function saveClient(){
   btn.disabled=true;btn.textContent='Saving...';
   try{
     const eid=document.getElementById('f-id').value;
+    const prevStage=document.getElementById('f-prev-stage').value;
     const stage=document.getElementById('f-stage').value;
     const type=document.getElementById('f-type').value;
     const salePrice=parseFloat(document.getElementById('f-price').value)||null;
@@ -640,19 +657,52 @@ async function saveClient(){
     const city=document.getElementById('f-city').value.trim();
     const state=document.getElementById('f-state').value.trim();
     const zip=document.getElementById('f-zip').value.trim();
+    const coe=document.getElementById('f-coe').value||null;
     const property=[street,city,state,zip].filter(Boolean).join(', ');
     const source=document.getElementById('f-source').value;
-    const lostReason=stage==='Lost'?(document.getElementById('f-lost-reason').value||null):null;
-    const payload={name,phone:document.getElementById('f-phone').value.trim(),street,city,state,zip,property,type,stage,source,next_action:document.getElementById('f-next').value.trim(),sale_price:salePrice,commission,lost_reason:lostReason,user_id:currentUser.id};
-    if(eid){await sb.from('clients').update(payload).eq('id',eid);}
-    else{payload.added_date=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});await sb.from('clients').insert(payload);}
-    if(stage==='Closed'){
-      await loadClosings();
-      const existing=closings.find(c=>c.name===name);
-      if(!existing){await sb.from('closings').insert({name,street,city,state,zip,property,type,price:salePrice||0,commission:commission||0,coe:new Date().toISOString().split('T')[0],source,user_id:currentUser.id});}
+    const lostReason=stage==='Lost'?document.getElementById('f-lost-reason').value:'';
+
+    const payload={
+      name,
+      phone:document.getElementById('f-phone').value.trim(),
+      street,city,state,zip,property,type,stage,source,
+      next_action:document.getElementById('f-next').value.trim(),
+      sale_price:salePrice,
+      commission,
+      coe,
+      lost_reason:lostReason,
+      prev_stage:stage==='Lost'?(prevStage||null):null,
+    };
+
+    let result;
+    if(eid){
+      result=await sb.from('clients').update(payload).eq('id',eid);
+    }else{
+      payload.added_date=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});
+      result=await sb.from('clients').insert(payload);
     }
-    await loadAll();closeModal();
-  }catch(e){alert('Error saving: '+e.message);}
+
+    if(result.error){alert('Save error: '+result.error.message);btn.disabled=false;btn.textContent='Save client';return;}
+
+    // Auto-create closing when Closed
+    if(stage==='Closed'&&salePrice){
+      const{data:existingClosings}=await sb.from('closings').select('id').eq('name',name);
+      if(!existingClosings||existingClosings.length===0){
+        await sb.from('closings').insert({
+          name,street,city,state,zip,property,type,
+          price:salePrice,
+          commission:commission||0,
+          coe:coe||new Date().toISOString().split('T')[0],
+          source,
+        });
+      }
+    }
+
+    await loadAll();
+    closeModal();
+  }catch(e){
+    alert('Unexpected error: '+e.message);
+  }
   btn.disabled=false;btn.textContent='Save client';
 }
 
@@ -686,14 +736,14 @@ function editClosing(id){
 
 async function deleteClosing(id){
   if(!confirm('Delete this closing?'))return;
-  await sb.from('closings').delete().eq('id',id);
+  const{error}=await sb.from('closings').delete().eq('id',id);
+  if(error){alert('Error: '+error.message);return;}
   await loadClosings();render();
 }
 
 async function saveClosing(){
   const name=document.getElementById('c-name').value.trim();
   if(!name){alert('Please enter a client name.');return;}
-if(!currentUser){alert('Session expired. Please sign out and sign back in.');return;}
   const btn=document.getElementById('save-closing-btn');
   btn.disabled=true;btn.textContent='Saving...';
   try{
@@ -703,11 +753,20 @@ if(!currentUser){alert('Session expired. Please sign out and sign back in.');ret
     const state=document.getElementById('c-state').value.trim();
     const zip=document.getElementById('c-zip').value.trim();
     const property=[street,city,state,zip].filter(Boolean).join(', ');
-    const payload={name,street,city,state,zip,property,type:document.getElementById('c-type').value,price:parseFloat(document.getElementById('c-price').value)||0,commission:parseFloat(document.getElementById('c-commission').value)||0,coe:document.getElementById('c-coe').value,source:document.getElementById('c-source').value,user_id:currentUser.id};
-    if(eid){await sb.from('closings').update(payload).eq('id',eid);}
-    else{await sb.from('closings').insert(payload);}
+    const payload={
+      name,street,city,state,zip,property,
+      type:document.getElementById('c-type').value,
+      price:parseFloat(document.getElementById('c-price').value)||0,
+      commission:parseFloat(document.getElementById('c-commission').value)||0,
+      coe:document.getElementById('c-coe').value||null,
+      source:document.getElementById('c-source').value,
+    };
+    let result;
+    if(eid){result=await sb.from('closings').update(payload).eq('id',eid);}
+    else{result=await sb.from('closings').insert(payload);}
+    if(result.error){alert('Save error: '+result.error.message);btn.disabled=false;btn.textContent='Save closing';return;}
     await loadClosings();render();closeClosingModal();
-  }catch(e){alert('Error saving: '+e.message);}
+  }catch(e){alert('Unexpected error: '+e.message);}
   btn.disabled=false;btn.textContent='Save closing';
 }
 
@@ -728,7 +787,9 @@ function calcNet(){
   set('r-list-comm',listComm,true);set('r-buy-comm',buyComm,true);
   set('r-title',title,true);set('r-transfer',transfer,true);set('r-hoa',hoa,true);
   set('r-warranty',warranty,true);set('r-staging',staging,true);set('r-repairs',repairs,true);set('r-other',other,true);
-  const netEl=document.getElementById('r-net');netEl.textContent=fmt(net);netEl.style.color=net<0?'var(--red)':'var(--accent)';
+  const netEl=document.getElementById('r-net');
+  netEl.textContent=fmt(net);
+  netEl.style.color=net<0?'var(--red)':'var(--accent)';
 }
 function resetNet(){
   ['ns-seller','ns-street','ns-city','ns-state','ns-zip','ns-price','ns-payoff','ns-heloc','ns-coe','ns-title','ns-transfer','ns-hoa','ns-warranty','ns-staging','ns-repairs','ns-other'].forEach(id=>document.getElementById(id).value='');
