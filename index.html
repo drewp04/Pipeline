@@ -337,7 +337,7 @@
         <div style="display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;">
           <div style="position:relative;width:180px;height:180px;">
             <canvas id="ns-donut"></canvas>
-            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;
               <div style="font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.05em;">Net at close</div>
               <div style="font-family:var(--font-display);font-size:26px;font-weight:400;color:var(--accent)" id="r-net-donut">$0</div>
             </div>
@@ -923,14 +923,26 @@ function calcNet(){
 }
 
 function resetNet(){
-  ['ns-seller','ns-street','ns-city','ns-state','ns-zip','ns-price','ns-payoff','ns-heloc','ns-coe',
-   'ns-concession','ns-owners-policy','ns-escrow','ns-doc-prep','ns-tax-cert','ns-593-proc',
-   'ns-transfer','ns-593-form','ns-recording','ns-notary','ns-hoa','ns-warranty',
-   'ns-staging','ns-repairs','ns-interest','ns-other'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['ns-seller','ns-street','ns-city','ns-state','ns-zip','ns-price','ns-payoff','ns-heloc','ns-coe','ns-concession'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('ns-list-pct').value='2.5';
   document.getElementById('ns-buy-pct').value='2.5';
   document.getElementById('ns-tax-rate').value='1.48';
   document.getElementById('ns-loan-type').value='Conventional';
+  document.getElementById('ns-owners-policy').value='1485';
+  document.getElementById('ns-escrow').value='842';
+  document.getElementById('ns-doc-prep').value='125';
+  document.getElementById('ns-tax-cert').value='55';
+  document.getElementById('ns-593-proc').value='45';
+  document.getElementById('ns-transfer').value='495';
+  document.getElementById('ns-593-form').value='45';
+  document.getElementById('ns-recording').value='75';
+  document.getElementById('ns-notary').value='200';
+  document.getElementById('ns-interest').value='62';
+  document.getElementById('ns-hoa').value='0';
+  document.getElementById('ns-warranty').value='0';
+  document.getElementById('ns-staging').value='0';
+  document.getElementById('ns-repairs').value='0';
+  document.getElementById('ns-other').value='0';
   calcNet();
 }
 
@@ -980,7 +992,7 @@ async function downloadPDF(){
   }catch(e){alert('Error generating PDF: '+e.message);}
   btn.textContent='Download PDF';btn.disabled=false;
 }
-calcNet();
+resetNet();
 </script>
 </body>
 </html>
