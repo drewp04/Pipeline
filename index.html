@@ -874,9 +874,9 @@ function calcProratedTax(){
     const coe=new Date(coeVal+'T12:00:00');
     const yearStart=new Date(coe.getFullYear(),0,1);
     const daysInYear=((coe.getFullYear()%4===0&&coe.getFullYear()%100!==0)||coe.getFullYear()%400===0)?366:365;
-    const dayOfYear=Math.floor((coe-yearStart)/(1000*60*60*24));
-    const proratedDays=daysInYear-dayOfYear;
-    return price*taxRate*(proratedDays/daysInYear);
+    // Seller owes taxes from Jan 1 to closing date (WFG method)
+    const dayOfYear=Math.floor((coe-yearStart)/(1000*60*60*24))+1;
+    return price*taxRate*(dayOfYear/daysInYear);
   }catch(e){return 0;}
 }
 
@@ -907,12 +907,24 @@ function calcNet(){
   const concessionRaw=gv('ns-concession');
   const concessionModeEl=document.getElementById('ns-concession-mode');
   const concession=concessionModeEl&&concessionModeEl.value==='pct'?price*(concessionRaw/100):concessionRaw;
-  const ownersPolicy=gv('ns-owners-policy');
+  // Homeowner's policy: auto-calculate at ~$3.29 per $1,000 if field is 0/empty (WFG Kern rate)
+  let ownersPolicy=gv('ns-owners-policy');
+  const ownersPolicyEl=document.getElementById('ns-owners-policy');
+  if(price>0&&(!ownersPolicyEl.value||parseFloat(ownersPolicyEl.value)===0)){
+    ownersPolicy=Math.round(price/1000*3.29);
+    ownersPolicyEl.value=ownersPolicy;
+  }
   const escrow=gv('ns-escrow');
   const docPrep=gv('ns-doc-prep');
   const taxCert=gv('ns-tax-cert');
   const proc593=gv('ns-593-proc');
-  const transfer=gv('ns-transfer');
+  // Transfer tax: auto-calculate at $1.10 per $1,000 if field is 0/empty
+  let transfer=gv('ns-transfer');
+  const transferEl=document.getElementById('ns-transfer');
+  if(price>0&&(!transferEl.value||parseFloat(transferEl.value)===0)){
+    transfer=Math.round(price/1000*1.10*100)/100;
+    transferEl.value=transfer.toFixed(2);
+  }
   const form593=gv('ns-593-form');
   const recording=gv('ns-recording');
   const notary=gv('ns-notary');
@@ -973,12 +985,12 @@ function resetNet(){
   document.getElementById('ns-tax-rate').value='1.48';
   document.getElementById('ns-loan-type').value='Conventional';
   // Kern County defaults
-  document.getElementById('ns-owners-policy').value='1485';
+  document.getElementById('ns-owners-policy').value='0'; // auto-calculated from price
   document.getElementById('ns-escrow').value='842';
   document.getElementById('ns-doc-prep').value='125';
   document.getElementById('ns-tax-cert').value='55';
   document.getElementById('ns-593-proc').value='45';
-  document.getElementById('ns-transfer').value='495';
+  document.getElementById('ns-transfer').value='0'; // auto-calculated from price
   document.getElementById('ns-593-form').value='45';
   document.getElementById('ns-recording').value='75';
   document.getElementById('ns-notary').value='200';
