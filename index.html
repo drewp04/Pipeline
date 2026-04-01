@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Andrew Perez — 2026 Pipeline</title>
+<title>AgentDesk — Real Estate Command Center</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
@@ -169,15 +169,15 @@
 <!-- AUTH -->
 <div id="auth-screen" class="auth-wrap">
   <div class="auth-card">
-    <div class="auth-brand">Andrew Perez — <em>Pipeline</em></div>
-    <div class="auth-sub">Sign in to access your dashboard</div>
+    <div class="auth-brand">Agent<em>Desk</em></div>
+    <div class="auth-sub">Your real estate command center</div>
     <div class="auth-tabs">
       <div class="auth-tab active" onclick="switchAuthTab('login')">Sign in</div>
       <div class="auth-tab" onclick="switchAuthTab('signup')">Create account</div>
     </div>
     <div id="auth-error" class="auth-error"></div>
     <div id="auth-success" class="auth-success"></div>
-    <div class="form-group"><label>Email</label><input id="auth-email" type="email" placeholder="andrew@aprealtor.co" /></div>
+    <div class="form-group"><label>Email</label><input id="auth-email" type="email" placeholder="you@email.com" /></div>
     <div class="form-group"><label>Password</label><input id="auth-password" type="password" placeholder="••••••••" /></div>
     <button class="btn primary" id="auth-btn" onclick="handleAuth()" style="width:100%;justify-content:center;">Sign in</button>
     <div style="text-align:center;margin-top:1rem;">
@@ -190,7 +190,7 @@
 <div id="app" style="display:none">
   <div class="header">
     <div class="header-top">
-      <div class="brand">Andrew Perez — <em>2026 Pipeline</em></div>
+      <div class="brand">Agent<em>Desk</em></div>
       <div class="header-right">
         <span class="user-email" id="user-email"></span>
         <button class="btn signout" id="signout-btn">Sign out</button>
@@ -202,6 +202,7 @@
       <div class="tab" onclick="showTab('closings')">Closings</div>
       <div class="tab" onclick="showTab('lost')">Lost Deals</div>
       <div class="tab" onclick="showTab('netsheet')">Net Sheet</div>
+      <div class="tab" onclick="showTab('settings')">⚙ Profile</div>
     </div>
   </div>
 
@@ -407,6 +408,54 @@
       </div>
     </div>
   </div>
+  <!-- SETTINGS -->
+  <div id="tab-settings" class="section">
+    <div style="max-width:600px;">
+      <div style="font-family:var(--font-display);font-size:24px;font-weight:400;margin-bottom:0.25rem;">Profile & Settings</div>
+      <div style="font-size:13px;color:var(--text-faint);margin-bottom:1.5rem;">Your info appears on net sheet PDFs and the app header.</div>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1rem;">
+        <div style="font-family:var(--font-display);font-size:17px;font-weight:400;margin-bottom:1rem;">Agent information</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="fg"><label>Full name</label><input id="p-name" placeholder="Jane Smith" /></div>
+          <div class="fg"><label>Email</label><input id="p-email" placeholder="jane@brokerage.com" /></div>
+          <div class="fg"><label>Phone</label><input id="p-phone" placeholder="661-555-0000" /></div>
+          <div class="fg"><label>DRE / BRE license #</label><input id="p-dre" placeholder="01234567" /></div>
+          <div class="fg"><label>Website</label><input id="p-website" placeholder="www.yourdomain.com" /></div>
+        </div>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1rem;">
+        <div style="font-family:var(--font-display);font-size:17px;font-weight:400;margin-bottom:1rem;">Brokerage information</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="fg full" style="grid-column:1/-1;"><label>Brokerage name</label><input id="p-brokerage" placeholder="Keller Williams Realty" /></div>
+          <div class="fg"><label>Broker license #</label><input id="p-broker-lic" placeholder="00123456" /></div>
+          <div class="fg"><label>Office phone</label><input id="p-office-phone" placeholder="661-555-0001" /></div>
+          <div class="fg full" style="grid-column:1/-1;"><label>Office address</label><input id="p-address" placeholder="1234 Main St, Bakersfield, CA 93301" /></div>
+        </div>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1rem;">
+        <div style="font-family:var(--font-display);font-size:17px;font-weight:400;margin-bottom:0.5rem;">Logo</div>
+        <div style="font-size:12px;color:var(--text-faint);margin-bottom:1rem;">Upload your logo to appear on net sheet PDFs.</div>
+        <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+          <div id="logo-preview" style="width:80px;height:80px;border:1px dashed var(--border-strong);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-faint);overflow:hidden;">
+            No logo
+          </div>
+          <div>
+            <input type="file" id="p-logo" accept="image/*" onchange="previewLogo()" style="display:none;" />
+            <button class="btn" onclick="document.getElementById('p-logo').click()">Upload logo</button>
+            <div style="font-size:11px;color:var(--text-faint);margin-top:6px;">PNG or JPG, max 1MB</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:1rem;">
+        <button class="btn primary" onclick="saveProfile()">Save profile</button>
+        <div id="profile-saved" style="display:none;font-size:13px;color:var(--green);align-self:center;">✓ Saved!</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- CLIENT MODAL -->
@@ -558,7 +607,85 @@ sb.auth.onAuthStateChange(async(event,session)=>{
   }
 });
 
-async function loadAll(){await Promise.all([loadClients(),loadClosings()]);render();}
+async function loadAll(){await Promise.all([loadClients(),loadClosings()]);loadProfile();render();}
+
+function loadProfile(){
+  const p=JSON.parse(localStorage.getItem('agentdesk_profile')||'{}');
+  if(p.name)document.getElementById('p-name').value=p.name;
+  if(p.email)document.getElementById('p-email').value=p.email;
+  if(p.phone)document.getElementById('p-phone').value=p.phone;
+  if(p.dre)document.getElementById('p-dre').value=p.dre;
+  if(p.website)document.getElementById('p-website').value=p.website;
+  if(p.brokerage)document.getElementById('p-brokerage').value=p.brokerage;
+  if(p.brokerLic)document.getElementById('p-broker-lic').value=p.brokerLic;
+  if(p.officePhone)document.getElementById('p-office-phone').value=p.officePhone;
+  if(p.address)document.getElementById('p-address').value=p.address;
+  if(p.logo){
+    const prev=document.getElementById('logo-preview');
+    if(prev)prev.innerHTML='<img src="'+p.logo+'" style="width:100%;height:100%;object-fit:contain;" />';
+  }
+  updateHeader(p);
+}
+
+function getProfile(){
+  return JSON.parse(localStorage.getItem('agentdesk_profile')||'{}');
+}
+
+function saveProfile(){
+  const p={
+    name:document.getElementById('p-name').value.trim(),
+    email:document.getElementById('p-email').value.trim(),
+    phone:document.getElementById('p-phone').value.trim(),
+    dre:document.getElementById('p-dre').value.trim(),
+    website:document.getElementById('p-website').value.trim(),
+    brokerage:document.getElementById('p-brokerage').value.trim(),
+    brokerLic:document.getElementById('p-broker-lic').value.trim(),
+    officePhone:document.getElementById('p-office-phone').value.trim(),
+    address:document.getElementById('p-address').value.trim(),
+  };
+  const logoFile=document.getElementById('p-logo').files[0];
+  if(logoFile){
+    const reader=new FileReader();
+    reader.onload=function(e){
+      p.logo=e.target.result;
+      localStorage.setItem('agentdesk_profile',JSON.stringify(p));
+      updateHeader(p);
+      const saved=document.getElementById('profile-saved');
+      saved.style.display='flex';
+      setTimeout(()=>saved.style.display='none',3000);
+    };
+    reader.readAsDataURL(logoFile);
+  }else{
+    const existing=getProfile().logo;
+    if(existing)p.logo=existing;
+    localStorage.setItem('agentdesk_profile',JSON.stringify(p));
+    updateHeader(p);
+    const saved=document.getElementById('profile-saved');
+    saved.style.display='flex';
+    setTimeout(()=>saved.style.display='none',3000);
+  }
+}
+
+function previewLogo(){
+  const file=document.getElementById('p-logo').files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const prev=document.getElementById('logo-preview');
+    if(prev)prev.innerHTML='<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:contain;" />';
+  };
+  reader.readAsDataURL(file);
+}
+
+function updateHeader(p){
+  const brand=document.querySelector('.brand');
+  if(!brand)return;
+  if(p.name){
+    brand.innerHTML=p.name+' — <em>AgentDesk</em>';
+  }else{
+    brand.innerHTML='Agent<em>Desk</em>';
+  }
+}
 async function loadClients(){const{data,error}=await sb.from('clients').select('*').order('created_at',{ascending:false});if(!error&&data)clients=data;}
 async function loadClosings(){const{data,error}=await sb.from('closings').select('*').order('created_at',{ascending:false});if(!error&&data)closings=data;}
 
@@ -681,7 +808,7 @@ function showTab(t){
   document.querySelectorAll('.section').forEach(el=>el.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
   document.getElementById('tab-'+t).classList.add('active');
-  document.querySelectorAll('.tab').forEach((el,i)=>{if(['dashboard','clients','closings','lost','netsheet'][i]===t)el.classList.add('active');});
+  document.querySelectorAll('.tab').forEach((el,i)=>{if(['dashboard','clients','closings','lost','netsheet','settings'][i]===t)el.classList.add('active');});
 }
 
 function openModal(){
@@ -1020,7 +1147,7 @@ function downloadPDF(){
     const isBold=el.style.fontWeight==='500';
     return '<tr><td style="padding:2px '+(isIndent?'20':'6')+'px;font-size:'+(isIndent?'10':'11')+'px;font-weight:'+(isBold?'600':'400')+';color:'+(isIndent?'#6b6760':'#1a1917')+';">'+(lbl?lbl.textContent:'')+'</td><td style="padding:2px 6px;text-align:right;font-size:'+(isIndent?'10':'11')+'px;color:'+(isNeg?'#b02020':'#1a1917')+';font-weight:'+(isBold?'600':'400')+';">'+(val?val.textContent:'')+'</td></tr>';
   }).join('');
-  const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Net Sheet</title><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:Georgia,serif;color:#1a1917;padding:1rem;font-size:12px;}h1{font-size:18px;font-weight:400;margin-bottom:2px;}h2{font-size:10px;font-weight:400;color:#6b6760;margin-bottom:1rem;}table{width:100%;border-collapse:collapse;}@media print{@page{size:letter;margin:0.5in;}}</style></head><body><h1>Seller Net Sheet</h1><h2>'+seller+(street?' · '+street:'')+(city?', '+city:'')+' · '+date+'</h2><table>'+lines+'</table><p style="font-size:9px;color:#a09d98;margin-top:0.75rem;">* Estimate only. Actual figures may vary. Kern County rate 1.48%. Consult escrow officer for exact numbers.</p><p style="font-size:9px;color:#a09d98;margin-top:3px;">Prepared by Andrew Perez · DRE #01965640 · 661-619-7272</p></body></html>';
+  const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>AgentDesk — Net Sheet</title><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:Georgia,serif;color:#1a1917;padding:1rem;font-size:12px;}h1{font-size:18px;font-weight:400;margin-bottom:2px;}h2{font-size:10px;font-weight:400;color:#6b6760;margin-bottom:1rem;}table{width:100%;border-collapse:collapse;}@media print{@page{size:letter;margin:0.5in;}}</style></head><body><h1>Seller Net Sheet</h1><h2>'+seller+(street?' · '+street:'')+(city?', '+city:'')+' · '+date+'</h2><table>'+lines+'</table><p style="font-size:9px;color:#a09d98;margin-top:0.75rem;">* Estimate only. Actual figures may vary. Kern County rate 1.48%. Consult escrow officer for exact numbers.</p><p style="font-size:9px;color:#a09d98;margin-top:3px;">Prepared by AgentDesk · agentdesk.io</p></body></html>';
   const win=window.open('','_blank','width=700,height=900');
   win.document.write(html);
   win.document.close();
