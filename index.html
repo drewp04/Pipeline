@@ -1257,8 +1257,10 @@ async function downloadPDF(){
         ${agent.address?`<div style="font-size:10px;color:#555;">${agent.address}</div>`:''}
       </td>
       <td style="vertical-align:middle;text-align:right;">
-        ${agent.agentLogo?`<img src="${agent.agentLogo}" style="max-height:36px;max-width:100px;object-fit:contain;display:block;margin-bottom:4px;" />`:''}
-        ${agent.logo?`<img src="${agent.logo}" style="max-height:36px;max-width:100px;object-fit:contain;display:block;" />`:''}
+        <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;">
+          ${agent.agentLogo?`<img src="${agent.agentLogo}" style="max-height:40px;max-width:100px;object-fit:contain;" />`:''}
+          ${agent.logo?`<img src="${agent.logo}" style="max-height:40px;max-width:100px;object-fit:contain;" />`:''}
+        </div>
       </td>
     </tr>
   </table>`;
