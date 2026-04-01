@@ -1140,11 +1140,31 @@ function resetNet(){
   calcNet();
 }
 
-function downloadPDF(){
+async function downloadPDF(){
   const seller=document.getElementById('ns-seller').value||'Seller';
   const city=document.getElementById('ns-city').value||'';
   const street=document.getElementById('ns-street').value||'';
   const date=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+
+  // Fetch fresh profile from Supabase
+  let agentLine='AgentDesk';
+  let logoHtml='';
+  if(currentUser){
+    const{data}=await sb.from('profiles').select('*').eq('user_id',currentUser.id).single();
+    if(data){
+      const parts=[];
+      if(data.full_name)parts.push(data.full_name);
+      if(data.dre)parts.push('DRE #'+data.dre);
+      if(data.phone)parts.push(data.phone);
+      if(data.brokerage)parts.push(data.brokerage);
+      if(data.broker_lic)parts.push('Broker Lic #'+data.broker_lic);
+      if(data.address)parts.push(data.address);
+      if(data.website)parts.push(data.website);
+      if(parts.length)agentLine=parts.join(' · ');
+      if(data.logo)logoHtml='<div style="margin-bottom:0.5rem;"><img src="'+data.logo+'" style="height:40px;object-fit:contain;" /></div>';
+    }
+  }
+
   const lines=Array.from(document.getElementById('ns-results-card').querySelectorAll('.ns-line,.ns-divider,.ns-total')).map(el=>{
     if(el.classList.contains('ns-divider'))return '<tr><td colspan="2" style="padding:3px 0;"><hr style="border:none;border-top:1px solid #eee;"/></td></tr>';
     if(el.classList.contains('ns-total')){
@@ -1157,7 +1177,9 @@ function downloadPDF(){
     const isBold=el.style.fontWeight==='500';
     return '<tr><td style="padding:2px '+(isIndent?'20':'6')+'px;font-size:'+(isIndent?'10':'11')+'px;font-weight:'+(isBold?'600':'400')+';color:'+(isIndent?'#6b6760':'#1a1917')+';">'+(lbl?lbl.textContent:'')+'</td><td style="padding:2px 6px;text-align:right;font-size:'+(isIndent?'10':'11')+'px;color:'+(isNeg?'#b02020':'#1a1917')+';font-weight:'+(isBold?'600':'400')+';">'+(val?val.textContent:'')+'</td></tr>';
   }).join('');
-  const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>AgentDesk — Net Sheet</title><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:Georgia,serif;color:#1a1917;padding:1rem;font-size:12px;}h1{font-size:18px;font-weight:400;margin-bottom:2px;}h2{font-size:10px;font-weight:400;color:#6b6760;margin-bottom:1rem;}table{width:100%;border-collapse:collapse;}@media print{@page{size:letter;margin:0.5in;}}</style></head><body><h1>Seller Net Sheet</h1><h2>'+seller+(street?' · '+street:'')+(city?', '+city:'')+' · '+date+'</h2><table>'+lines+'</table><p style="font-size:9px;color:#a09d98;margin-top:0.75rem;">* Estimate only. Actual figures may vary. Kern County rate 1.48%. Consult escrow officer for exact numbers.</p><p style="font-size:9px;color:#a09d98;margin-top:3px;">Prepared by AgentDesk · agentdesk.io</p></body></html>';
+
+  const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Net Sheet</title><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:Georgia,serif;color:#1a1917;padding:1rem;font-size:12px;}h1{font-size:18px;font-weight:400;margin-bottom:2px;}h2{font-size:10px;font-weight:400;color:#6b6760;margin-bottom:1rem;}table{width:100%;border-collapse:collapse;}@media print{@page{size:letter;margin:0.5in;}}</style></head><body>'+logoHtml+'<h1>Seller Net Sheet</h1><h2>'+seller+(street?' · '+street:'')+(city?', '+city:'')+' · '+date+'</h2><table>'+lines+'</table><p style="font-size:9px;color:#a09d98;margin-top:0.75rem;">* Estimate only. Actual figures may vary. Kern County rate 1.48%. Consult escrow officer for exact numbers.</p><p style="font-size:9px;color:#a09d98;margin-top:3px;">'+agentLine+'</p></body></html>';
+
   const win=window.open('','_blank','width=700,height=900');
   win.document.write(html);
   win.document.close();
