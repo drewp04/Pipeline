@@ -910,7 +910,7 @@ function calcNet(){
   // Homeowner's policy: $3.29 per $1,000 of sale price (WFG Kern rate)
   let ownersPolicy=gv('ns-owners-policy');
   const ownersPolicyEl=document.getElementById('ns-owners-policy');
-  if(price>0&&parseFloat(ownersPolicyEl.value||0)<100){
+  if(price>0&&parseFloat(ownersPolicyEl.value||0)<500){
     ownersPolicy=Math.round(price*0.00329);
     ownersPolicyEl.value=ownersPolicy;
   }
