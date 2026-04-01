@@ -664,6 +664,26 @@ async function loadProfile(){
 
 function getProfile(){return cachedProfile;}
 
+function compressImage(file, maxWidth, quality){
+  return new Promise(resolve=>{
+    const reader=new FileReader();
+    reader.onload=function(e){
+      const img=new Image();
+      img.onload=function(){
+        const canvas=document.createElement('canvas');
+        let w=img.width, h=img.height;
+        if(w>maxWidth){h=Math.round(h*maxWidth/w);w=maxWidth;}
+        canvas.width=w;canvas.height=h;
+        const ctx=canvas.getContext('2d');
+        ctx.drawImage(img,0,0,w,h);
+        resolve(canvas.toDataURL('image/jpeg',quality));
+      };
+      img.src=e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 async function saveProfile(){
   if(!currentUser){alert('Please sign in first.');return;}
   const btn=document.querySelector('#tab-settings .btn.primary');
@@ -685,27 +705,12 @@ async function saveProfile(){
     headshot:cachedProfile.headshot||'',
     agent_logo:cachedProfile.agentLogo||''
   };
-  if(headshotFile){
-    await new Promise(resolve=>{
-      const reader=new FileReader();
-      reader.onload=e=>{p.headshot=e.target.result;resolve();};
-      reader.readAsDataURL(headshotFile);
-    });
-  }else{p.headshot=cachedProfile.headshot||'';}
-  if(agentLogoFile){
-    await new Promise(resolve=>{
-      const reader=new FileReader();
-      reader.onload=e=>{p.agent_logo=e.target.result;resolve();};
-      reader.readAsDataURL(agentLogoFile);
-    });
-  }else{p.agent_logo=cachedProfile.agentLogo||'';}
-  if(logoFile){
-    await new Promise(resolve=>{
-      const reader=new FileReader();
-      reader.onload=e=>{p.logo=e.target.result;resolve();};
-      reader.readAsDataURL(logoFile);
-    });
-  }
+  if(headshotFile){p.headshot=await compressImage(headshotFile,300,0.7);}
+  else{p.headshot=cachedProfile.headshot||'';}
+  if(agentLogoFile){p.agent_logo=await compressImage(agentLogoFile,400,0.8);}
+  else{p.agent_logo=cachedProfile.agentLogo||'';}
+  if(logoFile){p.logo=await compressImage(logoFile,400,0.8);}
+  else{p.logo=cachedProfile.logo||'';}
   const{error}=await sb.from('profiles').upsert(p,{onConflict:'user_id'});
   if(error){alert('Error saving: '+error.message);}
   else{
@@ -718,37 +723,28 @@ async function saveProfile(){
   if(btn){btn.textContent='Save profile';btn.disabled=false;}
 }
 
-function previewLogo(){
+async function previewLogo(){
   const file=document.getElementById('p-logo').files[0];
   if(!file)return;
-  const reader=new FileReader();
-  reader.onload=function(e){
-    const prev=document.getElementById('logo-preview');
-    if(prev)prev.innerHTML='<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:contain;" />';
-  };
-  reader.readAsDataURL(file);
+  const compressed=await compressImage(file,400,0.8);
+  const prev=document.getElementById('logo-preview');
+  if(prev)prev.innerHTML='<img src="'+compressed+'" style="width:100%;height:100%;object-fit:contain;" />';
 }
 
-function previewHeadshot(){
+async function previewHeadshot(){
   const file=document.getElementById('p-headshot').files[0];
   if(!file)return;
-  const reader=new FileReader();
-  reader.onload=function(e){
-    const prev=document.getElementById('headshot-preview');
-    if(prev)prev.innerHTML='<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover;" />';
-  };
-  reader.readAsDataURL(file);
+  const compressed=await compressImage(file,300,0.7);
+  const prev=document.getElementById('headshot-preview');
+  if(prev)prev.innerHTML='<img src="'+compressed+'" style="width:100%;height:100%;object-fit:cover;" />';
 }
 
-function previewAgentLogo(){
+async function previewAgentLogo(){
   const file=document.getElementById('p-agent-logo').files[0];
   if(!file)return;
-  const reader=new FileReader();
-  reader.onload=function(e){
-    const prev=document.getElementById('agent-logo-preview');
-    if(prev)prev.innerHTML='<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:contain;" />';
-  };
-  reader.readAsDataURL(file);
+  const compressed=await compressImage(file,400,0.8);
+  const prev=document.getElementById('agent-logo-preview');
+  if(prev)prev.innerHTML='<img src="'+compressed+'" style="width:100%;height:100%;object-fit:contain;" />';
 }
 
 function updateHeader(p){
