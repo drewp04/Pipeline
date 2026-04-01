@@ -282,10 +282,16 @@
           <div class="ns-field"><div class="ns-label">Seller broker fee</div><div class="ns-pct-wrap"><span class="sfx">%</span><input id="ns-list-pct" type="number" min="0" max="10" step="0.1" value="2.5" oninput="calcNet()" /></div></div>
           <div class="ns-field"><div class="ns-label">Buyer broker fee</div><div class="ns-pct-wrap"><span class="sfx">%</span><input id="ns-buy-pct" type="number" min="0" max="10" step="0.1" value="2.5" oninput="calcNet()" /></div></div>
         </div>
-        <div class="ns-row single">
-          <div class="ns-field"><div class="ns-label">Seller concession</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-concession" type="number" min="0" placeholder="0" oninput="calcNet()" /></div></div>
-        </div>
-      </div>
+       <div class="ns-field" style="grid-column:1/-1;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+    <div class="ns-label">Seller concession</div>
+    <div style="display:flex;border:1px solid var(--border-strong);border-radius:var(--radius);overflow:hidden;">
+      <button id="concession-dollar-btn" onclick="setConcessionMode('dollar')" style="font-family:var(--font-body);font-size:11px;font-weight:500;padding:3px 10px;border:none;cursor:pointer;background:var(--accent);color:white;">$</button>
+      <button id="concession-pct-btn" onclick="setConcessionMode('pct')" style="font-family:var(--font-body);font-size:11px;font-weight:500;padding:3px 10px;border:none;cursor:pointer;background:var(--surface);color:var(--text-muted);">%</button>
+    </div>
+  </div>
+  <div class="ns-input-wrap"><span class="pfx" id="concession-prefix">$</span><input id="ns-concession" type="number" min="0" placeholder="0" oninput="calcNet()" /></div>
+</div>
 
       <!-- TITLE FEES -->
       <div class="ns-card">
@@ -864,7 +870,9 @@ function calcNet(){
   const heloc=gv('ns-heloc');
   const listPct=gv('ns-list-pct');
   const buyPct=gv('ns-buy-pct');
-  const concession=gv('ns-concession');
+ const concessionRaw=gv('ns-concession');
+const concessionPctBtn=document.getElementById('concession-pct-btn');
+const concession=concessionPctBtn&&concessionPctBtn.style.background==='var(--accent)'?price*(concessionRaw/100):concessionRaw;
   const ownersPolicy=gv('ns-owners-policy');
   const escrow=gv('ns-escrow');
   const docPrep=gv('ns-doc-prep');
@@ -921,7 +929,21 @@ function calcNet(){
     });
   }
 }
-
+function setConcessionMode(mode){
+  const dollar=document.getElementById('concession-dollar-btn');
+  const pct=document.getElementById('concession-pct-btn');
+  const prefix=document.getElementById('concession-prefix');
+  if(mode==='dollar'){
+    dollar.style.background='var(--accent)';dollar.style.color='white';
+    pct.style.background='var(--surface)';pct.style.color='var(--text-muted)';
+    prefix.textContent='$';
+  }else{
+    pct.style.background='var(--accent)';pct.style.color='white';
+    dollar.style.background='var(--surface)';dollar.style.color='var(--text-muted)';
+    prefix.textContent='%';
+  }
+  calcNet();
+}
 function resetNet(){
   ['ns-seller','ns-street','ns-city','ns-state','ns-zip','ns-price','ns-payoff','ns-heloc','ns-coe','ns-concession'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('ns-list-pct').value='2.5';
