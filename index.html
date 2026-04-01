@@ -907,11 +907,11 @@ function calcNet(){
   const concessionRaw=gv('ns-concession');
   const concessionModeEl=document.getElementById('ns-concession-mode');
   const concession=concessionModeEl&&concessionModeEl.value==='pct'?price*(concessionRaw/100):concessionRaw;
-  // Homeowner's policy: ~$3.29 per $1,000 of sale price (WFG Kern rate)
+  // Homeowner's policy: $3.29 per $1,000 of sale price (WFG Kern rate)
   let ownersPolicy=gv('ns-owners-policy');
   const ownersPolicyEl=document.getElementById('ns-owners-policy');
-  if(price>0&&(!ownersPolicyEl.value||parseFloat(ownersPolicyEl.value)===0||parseFloat(ownersPolicyEl.value)===1)){
-    ownersPolicy=Math.round((price/1000)*3.29);
+  if(price>0&&parseFloat(ownersPolicyEl.value||0)<100){
+    ownersPolicy=Math.round(price*0.00329);
     ownersPolicyEl.value=ownersPolicy;
   }
   const escrow=gv('ns-escrow');
@@ -921,8 +921,8 @@ function calcNet(){
   // Transfer tax: $1.10 per $1,000 of sale price (Kern County rate)
   let transfer=gv('ns-transfer');
   const transferEl=document.getElementById('ns-transfer');
-  if(price>0&&(!transferEl.value||parseFloat(transferEl.value)===0||parseFloat(transferEl.value)<1)){
-    transfer=Math.round((price/1000)*1.10*100)/100;
+  if(price>0&&parseFloat(transferEl.value||0)<100){
+    transfer=Math.round(price*0.0011*100)/100;
     transferEl.value=transfer.toFixed(2);
   }
   const form593=gv('ns-593-form');
