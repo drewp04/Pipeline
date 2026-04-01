@@ -303,6 +303,7 @@
               <button id="concession-pct-btn" onclick="setConcessionMode('pct')" style="font-family:var(--font-body);font-size:11px;font-weight:500;padding:3px 10px;border:none;cursor:pointer;background:var(--surface);color:var(--text-muted);">%</button>
             </div>
           </div>
+          <input type="hidden" id="ns-concession-mode" value="dollar" />
           <div class="ns-input-wrap"><span class="pfx" id="concession-prefix">$</span><input id="ns-concession" type="number" min="0" placeholder="0" oninput="calcNet()" /></div>
         </div>
         </div>
@@ -399,7 +400,7 @@
         </div>
         <div class="ns-actions">
           <button class="btn primary" onclick="downloadPDF()">Download PDF</button>
-          <button class="btn" onclick="window.print()">Print</button>
+          <button class="btn" onclick="downloadPDF()">Print / PDF</button>
           <button class="btn" onclick="resetNet()">Reset</button>
         </div>
         <div class="disclaimer">* Estimate only. Actual figures may vary. Prorated tax based on Kern County rate of 1.48%. Consult your escrow officer for exact numbers.</div>
@@ -879,13 +880,33 @@ function calcProratedTax(){
   }catch(e){return 0;}
 }
 
+function setConcessionMode(mode){
+  const dollar=document.getElementById('concession-dollar-btn');
+  const pct=document.getElementById('concession-pct-btn');
+  const prefix=document.getElementById('concession-prefix');
+  const modeInput=document.getElementById('ns-concession-mode');
+  if(modeInput)modeInput.value=mode;
+  if(mode==='dollar'){
+    if(dollar){dollar.style.background='#c8602a';dollar.style.color='white';}
+    if(pct){pct.style.background='#ffffff';pct.style.color='#6b6760';}
+    if(prefix)prefix.textContent='$';
+  }else{
+    if(pct){pct.style.background='#c8602a';pct.style.color='white';}
+    if(dollar){dollar.style.background='#ffffff';dollar.style.color='#6b6760';}
+    if(prefix)prefix.textContent='%';
+  }
+  calcNet();
+}
+
 function calcNet(){
   const price=gv('ns-price');
   const payoff=gv('ns-payoff');
   const heloc=gv('ns-heloc');
   const listPct=gv('ns-list-pct');
   const buyPct=gv('ns-buy-pct');
-  const concession=gv('ns-concession');
+  const concessionRaw=gv('ns-concession');
+  const concessionModeEl=document.getElementById('ns-concession-mode');
+  const concession=concessionModeEl&&concessionModeEl.value==='pct'?price*(concessionRaw/100):concessionRaw;
   const ownersPolicy=gv('ns-owners-policy');
   const escrow=gv('ns-escrow');
   const docPrep=gv('ns-doc-prep');
@@ -944,14 +965,29 @@ function calcNet(){
 }
 
 function resetNet(){
-  ['ns-seller','ns-street','ns-city','ns-state','ns-zip','ns-price','ns-payoff','ns-heloc','ns-coe',
-   'ns-concession','ns-owners-policy','ns-escrow','ns-doc-prep','ns-tax-cert','ns-593-proc',
-   'ns-transfer','ns-593-form','ns-recording','ns-notary','ns-hoa','ns-warranty',
-   'ns-staging','ns-repairs','ns-interest','ns-other'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  // Clear personal fields
+  ['ns-seller','ns-street','ns-city','ns-state','ns-zip','ns-price','ns-payoff','ns-heloc','ns-coe','ns-concession'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  // Set defaults
   document.getElementById('ns-list-pct').value='2.5';
   document.getElementById('ns-buy-pct').value='2.5';
   document.getElementById('ns-tax-rate').value='1.48';
   document.getElementById('ns-loan-type').value='Conventional';
+  // Kern County defaults
+  document.getElementById('ns-owners-policy').value='1485';
+  document.getElementById('ns-escrow').value='842';
+  document.getElementById('ns-doc-prep').value='125';
+  document.getElementById('ns-tax-cert').value='55';
+  document.getElementById('ns-593-proc').value='45';
+  document.getElementById('ns-transfer').value='495';
+  document.getElementById('ns-593-form').value='45';
+  document.getElementById('ns-recording').value='75';
+  document.getElementById('ns-notary').value='200';
+  document.getElementById('ns-interest').value='62';
+  document.getElementById('ns-hoa').value='0';
+  document.getElementById('ns-warranty').value='0';
+  document.getElementById('ns-staging').value='0';
+  document.getElementById('ns-repairs').value='0';
+  document.getElementById('ns-other').value='0';
   calcNet();
 }
 
@@ -978,7 +1014,7 @@ function downloadPDF(){
   win.document.close();
   setTimeout(function(){win.focus();win.print();},600);
 }
-resetNet();
+setTimeout(function(){resetNet();},100);
 </script>
 </body>
 </html>
