@@ -252,6 +252,7 @@
   <!-- NET SHEET -->
   <div id="tab-netsheet" class="section">
     <div class="net-sheet">
+      <!-- SALE INFO -->
       <div class="ns-card">
         <h3>Sale information</h3>
         <div class="ns-row">
@@ -265,23 +266,53 @@
           <div class="ns-field"><div class="ns-label">Zip</div><div class="ns-plain"><input id="ns-zip" placeholder="93301" oninput="calcNet()" /></div></div>
         </div>
         <div class="ns-row">
-          <div class="ns-field"><div class="ns-label">Sale price</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-price" type="number" min="0" placeholder="450000" oninput="calcNet()" /></div></div>
-          <div class="ns-field"><div class="ns-label">Loan payoff</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-payoff" type="number" min="0" placeholder="0" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">Sales price</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-price" type="number" min="0" placeholder="450000" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">Seller loan balance</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-payoff" type="number" min="0" placeholder="0" oninput="calcNet()" /></div></div>
         </div>
-        <div class="ns-row single"><div class="ns-field"><div class="ns-label">2nd mortgage / HELOC</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-heloc" type="number" min="0" placeholder="0" oninput="calcNet()" /></div></div></div>
+        <div class="ns-row">
+          <div class="ns-field"><div class="ns-label">2nd mortgage / HELOC</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-heloc" type="number" min="0" placeholder="0" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">Loan type</div><div class="ns-plain"><select id="ns-loan-type" onchange="calcNet()" style="width:100%;font-family:var(--font-body);font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius);background:var(--bg);color:var(--text);outline:none;"><option>Conventional</option><option>FHA</option><option>VA</option><option>Cash</option><option>Other</option></select></div></div>
+        </div>
       </div>
+
+      <!-- COMMISSION -->
       <div class="ns-card">
         <h3>Commission</h3>
         <div class="ns-row">
-          <div class="ns-field"><div class="ns-label">Listing agent</div><div class="ns-pct-wrap"><span class="sfx">%</span><input id="ns-list-pct" type="number" min="0" max="10" step="0.1" value="2.5" oninput="calcNet()" /></div></div>
-          <div class="ns-field"><div class="ns-label">Buyer agent</div><div class="ns-pct-wrap"><span class="sfx">%</span><input id="ns-buy-pct" type="number" min="0" max="10" step="0.1" value="2.5" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">Seller broker fee</div><div class="ns-pct-wrap"><span class="sfx">%</span><input id="ns-list-pct" type="number" min="0" max="10" step="0.1" value="2.5" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">Buyer broker fee</div><div class="ns-pct-wrap"><span class="sfx">%</span><input id="ns-buy-pct" type="number" min="0" max="10" step="0.1" value="2.5" oninput="calcNet()" /></div></div>
+        </div>
+        <div class="ns-row single">
+          <div class="ns-field"><div class="ns-label">Seller concession</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-concession" type="number" min="0" placeholder="0" oninput="calcNet()" /></div></div>
         </div>
       </div>
+
+      <!-- TITLE FEES -->
       <div class="ns-card">
-        <h3>Closing costs</h3>
+        <h3>Title fees</h3>
         <div class="ns-row">
-          <div class="ns-field"><div class="ns-label">Title & Escrow fees</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-title" type="number" min="0" placeholder="2500" oninput="calcNet()" /></div></div>
-          <div class="ns-field"><div class="ns-label">County transfer tax</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-transfer" type="number" min="0" placeholder="0" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">Homeowner's policy</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-owners-policy" type="number" min="0" placeholder="1485" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">Escrow fee</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-escrow" type="number" min="0" placeholder="842" oninput="calcNet()" /></div></div>
+        </div>
+        <div class="ns-row">
+          <div class="ns-field"><div class="ns-label">Doc prep fee</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-doc-prep" type="number" min="0" placeholder="125" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">Tax cert</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-tax-cert" type="number" min="0" placeholder="55" oninput="calcNet()" /></div></div>
+        </div>
+        <div class="ns-row single">
+          <div class="ns-field"><div class="ns-label">593 processing fee (CA)</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-593-proc" type="number" min="0" placeholder="45" oninput="calcNet()" /></div></div>
+        </div>
+      </div>
+
+      <!-- OTHER FEES -->
+      <div class="ns-card">
+        <h3>Other fees</h3>
+        <div class="ns-row">
+          <div class="ns-field"><div class="ns-label">Transfer tax</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-transfer" type="number" min="0" placeholder="495" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">593 form (CA)</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-593-form" type="number" min="0" placeholder="45" oninput="calcNet()" /></div></div>
+        </div>
+        <div class="ns-row">
+          <div class="ns-field"><div class="ns-label">Recording fees</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-recording" type="number" min="0" placeholder="75" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">Notary</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-notary" type="number" min="0" placeholder="200" oninput="calcNet()" /></div></div>
         </div>
         <div class="ns-row">
           <div class="ns-field"><div class="ns-label">HOA fees / transfer</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-hoa" type="number" min="0" placeholder="0" oninput="calcNet()" /></div></div>
@@ -291,31 +322,66 @@
           <div class="ns-field"><div class="ns-label">Staging / Photos</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-staging" type="number" min="0" placeholder="0" oninput="calcNet()" /></div></div>
           <div class="ns-field"><div class="ns-label">Repairs / Concessions</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-repairs" type="number" min="0" placeholder="0" oninput="calcNet()" /></div></div>
         </div>
-        <div class="ns-row single"><div class="ns-field"><div class="ns-label">Other costs</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-other" type="number" min="0" placeholder="0" oninput="calcNet()" /></div></div></div>
+        <div class="ns-row">
+          <div class="ns-field"><div class="ns-label">Prorated property tax %</div><div class="ns-pct-wrap"><span class="sfx">%</span><input id="ns-tax-rate" type="number" min="0" step="0.01" value="1.48" oninput="calcNet()" /></div></div>
+          <div class="ns-field"><div class="ns-label">Interest / misc</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-interest" type="number" min="0" placeholder="62" oninput="calcNet()" /></div></div>
+        </div>
+        <div class="ns-row single">
+          <div class="ns-field"><div class="ns-label">Other costs</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-other" type="number" min="0" placeholder="0" oninput="calcNet()" /></div></div>
+        </div>
       </div>
-      <div class="ns-card">
-        <h3>Estimated net proceeds</h3>
-        <div class="ns-line"><span class="lbl">Sale price</span><span class="val" id="r-price">$0</span></div>
+
+      <!-- RESULTS -->
+      <div class="ns-card" id="ns-results-card">
+        <h3>Net at close</h3>
+        <div style="display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;">
+          <div style="position:relative;width:180px;height:180px;">
+            <canvas id="ns-donut"></canvas>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+              <div style="font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.05em;">Net at close</div>
+              <div style="font-family:var(--font-display);font-size:26px;font-weight:400;color:var(--accent)" id="r-net-donut">$0</div>
+            </div>
+          </div>
+        </div>
+        <div class="ns-line"><span class="lbl">Sales price</span><span class="val" id="r-price">$0</span></div>
         <hr class="ns-divider" />
-        <div class="ns-line"><span class="lbl">Loan payoff</span><span class="val neg" id="r-payoff">— $0</span></div>
+        <div class="ns-line"><span class="lbl">Seller loan balance</span><span class="val neg" id="r-payoff">— $0</span></div>
         <div class="ns-line"><span class="lbl">2nd mortgage / HELOC</span><span class="val neg" id="r-heloc">— $0</span></div>
+        <div class="ns-line"><span class="lbl">Prorated property tax</span><span class="val neg" id="r-prop-tax">— $0</span></div>
         <hr class="ns-divider" />
-        <div class="ns-line"><span class="lbl">Listing commission</span><span class="val neg" id="r-list-comm">— $0</span></div>
-        <div class="ns-line"><span class="lbl">Buyer agent commission</span><span class="val neg" id="r-buy-comm">— $0</span></div>
+        <div class="ns-line" style="font-weight:500;"><span class="lbl">Commission</span><span class="val neg" id="r-total-comm">— $0</span></div>
+        <div class="ns-line" style="padding-left:1rem;"><span class="lbl" style="font-size:12px;">Seller broker fee</span><span class="val neg" style="font-size:12px;" id="r-list-comm">— $0</span></div>
+        <div class="ns-line" style="padding-left:1rem;"><span class="lbl" style="font-size:12px;">Buyer broker fee</span><span class="val neg" style="font-size:12px;" id="r-buy-comm">— $0</span></div>
+        <div class="ns-line" style="padding-left:1rem;"><span class="lbl" style="font-size:12px;">Seller concession</span><span class="val neg" style="font-size:12px;" id="r-concession">— $0</span></div>
         <hr class="ns-divider" />
-        <div class="ns-line"><span class="lbl">Title & Escrow</span><span class="val neg" id="r-title">— $0</span></div>
-        <div class="ns-line"><span class="lbl">County transfer tax</span><span class="val neg" id="r-transfer">— $0</span></div>
-        <div class="ns-line"><span class="lbl">HOA fees / transfer</span><span class="val neg" id="r-hoa">— $0</span></div>
-        <div class="ns-line"><span class="lbl">Home warranty</span><span class="val neg" id="r-warranty">— $0</span></div>
-        <div class="ns-line"><span class="lbl">Staging / Photos</span><span class="val neg" id="r-staging">— $0</span></div>
-        <div class="ns-line"><span class="lbl">Repairs / Concessions</span><span class="val neg" id="r-repairs">— $0</span></div>
-        <div class="ns-line"><span class="lbl">Other costs</span><span class="val neg" id="r-other">— $0</span></div>
-        <div class="ns-total"><span class="lbl">Estimated net to seller</span><span class="val" id="r-net">$0</span></div>
+        <div class="ns-line" style="font-weight:500;"><span class="lbl">Title fees</span><span class="val neg" id="r-title-total">— $0</span></div>
+        <div class="ns-line" style="padding-left:1rem;"><span class="lbl" style="font-size:12px;">Homeowner's policy</span><span class="val neg" style="font-size:12px;" id="r-owners-policy">— $0</span></div>
+        <div class="ns-line" style="padding-left:1rem;"><span class="lbl" style="font-size:12px;">Escrow fee</span><span class="val neg" style="font-size:12px;" id="r-escrow">— $0</span></div>
+        <div class="ns-line" style="padding-left:1rem;"><span class="lbl" style="font-size:12px;">Doc prep</span><span class="val neg" style="font-size:12px;" id="r-doc-prep">— $0</span></div>
+        <div class="ns-line" style="padding-left:1rem;"><span class="lbl" style="font-size:12px;">Tax cert</span><span class="val neg" style="font-size:12px;" id="r-tax-cert">— $0</span></div>
+        <div class="ns-line" style="padding-left:1rem;"><span class="lbl" style="font-size:12px;">593 processing fee</span><span class="val neg" style="font-size:12px;" id="r-593-proc">— $0</span></div>
+        <hr class="ns-divider" />
+        <div class="ns-line" style="font-weight:500;"><span class="lbl">Other fees</span><span class="val neg" id="r-other-total">— $0</span></div>
+        <div class="ns-line" style="padding-left:1rem;"><span class="lbl" style="font-size:12px;">Transfer tax</span><span class="val neg" style="font-size:12px;" id="r-transfer">— $0</span></div>
+        <div class="ns-line" style="padding-left:1rem;"><span class="lbl" style="font-size:12px;">593 form</span><span class="val neg" style="font-size:12px;" id="r-593-form">— $0</span></div>
+        <div class="ns-line" style="padding-left:1rem;"><span class="lbl" style="font-size:12px;">Recording fees</span><span class="val neg" style="font-size:12px;" id="r-recording">— $0</span></div>
+        <div class="ns-line" style="padding-left:1rem;"><span class="lbl" style="font-size:12px;">Notary</span><span class="val neg" style="font-size:12px;" id="r-notary">— $0</span></div>
+        <div class="ns-line" style="padding-left:1rem;"><span class="lbl" style="font-size:12px;">HOA fees</span><span class="val neg" style="font-size:12px;" id="r-hoa">— $0</span></div>
+        <div class="ns-line" style="padding-left:1rem;"><span class="lbl" style="font-size:12px;">Home warranty</span><span class="val neg" style="font-size:12px;" id="r-warranty">— $0</span></div>
+        <div class="ns-line" style="padding-left:1rem;"><span class="lbl" style="font-size:12px;">Staging / Photos</span><span class="val neg" style="font-size:12px;" id="r-staging">— $0</span></div>
+        <div class="ns-line" style="padding-left:1rem;"><span class="lbl" style="font-size:12px;">Repairs / Concessions</span><span class="val neg" style="font-size:12px;" id="r-repairs">— $0</span></div>
+        <div class="ns-line" style="padding-left:1rem;"><span class="lbl" style="font-size:12px;">Interest / misc</span><span class="val neg" style="font-size:12px;" id="r-interest">— $0</span></div>
+        <div class="ns-line" style="padding-left:1rem;"><span class="lbl" style="font-size:12px;">Other</span><span class="val neg" style="font-size:12px;" id="r-other">— $0</span></div>
+        <div class="ns-total">
+          <span class="lbl">Estimated net to seller</span>
+          <span class="val" id="r-net">$0</span>
+        </div>
         <div class="ns-actions">
-          <button class="btn primary" onclick="window.print()">Print / Save PDF</button>
+          <button class="btn primary" onclick="downloadPDF()">Download PDF</button>
+          <button class="btn" onclick="window.print()">Print</button>
           <button class="btn" onclick="resetNet()">Reset</button>
         </div>
-        <div class="disclaimer">* Estimate only. Actual figures may vary. Consult your escrow officer for exact numbers.</div>
+        <div class="disclaimer">* Estimate only. Actual figures may vary. Prorated tax based on Kern County rate of 1.48%. Consult your escrow officer for exact numbers.</div>
       </div>
     </div>
   </div>
@@ -775,26 +841,144 @@ document.getElementById('closing-modal').addEventListener('click',function(e){if
 document.getElementById('auth-email').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('auth-password').focus();});
 document.getElementById('auth-password').addEventListener('keydown',e=>{if(e.key==='Enter')handleAuth();});
 
-function calcNet(){
-  const price=gv('ns-price'),payoff=gv('ns-payoff'),heloc=gv('ns-heloc');
-  const listPct=gv('ns-list-pct'),buyPct=gv('ns-buy-pct');
-  const title=gv('ns-title'),transfer=gv('ns-transfer'),hoa=gv('ns-hoa');
-  const warranty=gv('ns-warranty'),staging=gv('ns-staging'),repairs=gv('ns-repairs'),other=gv('ns-other');
-  const listComm=price*(listPct/100),buyComm=price*(buyPct/100);
-  const net=price-payoff-heloc-listComm-buyComm-title-transfer-hoa-warranty-staging-repairs-other;
-  const set=(id,v,neg)=>{const el=document.getElementById(id);el.textContent=(neg?'— ':'')+fmt(v);};
-  set('r-price',price);set('r-payoff',payoff,true);set('r-heloc',heloc,true);
-  set('r-list-comm',listComm,true);set('r-buy-comm',buyComm,true);
-  set('r-title',title,true);set('r-transfer',transfer,true);set('r-hoa',hoa,true);
-  set('r-warranty',warranty,true);set('r-staging',staging,true);set('r-repairs',repairs,true);set('r-other',other,true);
-  const netEl=document.getElementById('r-net');
-  netEl.textContent=fmt(net);
-  netEl.style.color=net<0?'var(--red)':'var(--accent)';
+let nsDonutChart=null;
+
+function calcProratedTax(){
+  const price=gv('ns-price');
+  const taxRate=gv('ns-tax-rate')/100;
+  const coeVal=document.getElementById('ns-coe').value;
+  if(!price||!coeVal)return 0;
+  try{
+    const coe=new Date(coeVal+'T12:00:00');
+    const yearStart=new Date(coe.getFullYear(),0,1);
+    const daysInYear=((coe.getFullYear()%4===0&&coe.getFullYear()%100!==0)||coe.getFullYear()%400===0)?366:365;
+    const dayOfYear=Math.floor((coe-yearStart)/(1000*60*60*24));
+    const proratedDays=daysInYear-dayOfYear;
+    return price*taxRate*(proratedDays/daysInYear);
+  }catch(e){return 0;}
 }
+
+function calcNet(){
+  const price=gv('ns-price');
+  const payoff=gv('ns-payoff');
+  const heloc=gv('ns-heloc');
+  const listPct=gv('ns-list-pct');
+  const buyPct=gv('ns-buy-pct');
+  const concession=gv('ns-concession');
+  const ownersPolicy=gv('ns-owners-policy');
+  const escrow=gv('ns-escrow');
+  const docPrep=gv('ns-doc-prep');
+  const taxCert=gv('ns-tax-cert');
+  const proc593=gv('ns-593-proc');
+  const transfer=gv('ns-transfer');
+  const form593=gv('ns-593-form');
+  const recording=gv('ns-recording');
+  const notary=gv('ns-notary');
+  const hoa=gv('ns-hoa');
+  const warranty=gv('ns-warranty');
+  const staging=gv('ns-staging');
+  const repairs=gv('ns-repairs');
+  const interest=gv('ns-interest');
+  const other=gv('ns-other');
+  const propTax=calcProratedTax();
+
+  const listComm=price*(listPct/100);
+  const buyComm=price*(buyPct/100);
+  const totalComm=listComm+buyComm+concession;
+  const titleTotal=ownersPolicy+escrow+docPrep+taxCert+proc593;
+  const otherTotal=transfer+form593+recording+notary+hoa+warranty+staging+repairs+interest+other;
+  const totalDeductions=payoff+heloc+propTax+totalComm+titleTotal+otherTotal;
+  const net=price-totalDeductions;
+
+  const set=(id,v,neg)=>{const el=document.getElementById(id);if(el)el.textContent=(neg?'— ':'')+fmt(v);};
+  set('r-price',price);
+  set('r-payoff',payoff,true);set('r-heloc',heloc,true);set('r-prop-tax',propTax,true);
+  set('r-total-comm',totalComm,true);set('r-list-comm',listComm,true);set('r-buy-comm',buyComm,true);set('r-concession',concession,true);
+  set('r-title-total',titleTotal,true);set('r-owners-policy',ownersPolicy,true);set('r-escrow',escrow,true);set('r-doc-prep',docPrep,true);set('r-tax-cert',taxCert,true);set('r-593-proc',proc593,true);
+  set('r-other-total',otherTotal,true);set('r-transfer',transfer,true);set('r-593-form',form593,true);set('r-recording',recording,true);set('r-notary',notary,true);
+  set('r-hoa',hoa,true);set('r-warranty',warranty,true);set('r-staging',staging,true);set('r-repairs',repairs,true);set('r-interest',interest,true);set('r-other',other,true);
+
+  const netEl=document.getElementById('r-net');
+  const netDonut=document.getElementById('r-net-donut');
+  if(netEl){netEl.textContent=fmt(net);netEl.style.color=net<0?'var(--red)':'var(--accent)';}
+  if(netDonut){netDonut.textContent=fmt(net);netDonut.style.color=net<0?'var(--red)':'var(--accent)';}
+
+  // Update donut chart
+  if(nsDonutChart)nsDonutChart.destroy();
+  const canvas=document.getElementById('ns-donut');
+  if(canvas&&price>0){
+    nsDonutChart=new Chart(canvas.getContext('2d'),{
+      type:'doughnut',
+      data:{
+        labels:['Net to seller','Loan balance','Commission','Title fees','Other fees','Prop tax'],
+        datasets:[{
+          data:[Math.max(0,net),payoff+heloc,totalComm,titleTotal,otherTotal,propTax].map(v=>Math.round(v)),
+          backgroundColor:['#1d7a4e','#2563a8','#c8602a','#5b3fa8','#b06b10','#a03060'],
+          borderWidth:3,borderColor:'#fff'
+        }]
+      },
+      options:{responsive:false,cutout:'70%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+fmt(ctx.raw)}}}}
+    });
+  }
+}
+
 function resetNet(){
-  ['ns-seller','ns-street','ns-city','ns-state','ns-zip','ns-price','ns-payoff','ns-heloc','ns-coe','ns-title','ns-transfer','ns-hoa','ns-warranty','ns-staging','ns-repairs','ns-other'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('ns-list-pct').value='2.5';document.getElementById('ns-buy-pct').value='2.5';
+  ['ns-seller','ns-street','ns-city','ns-state','ns-zip','ns-price','ns-payoff','ns-heloc','ns-coe',
+   'ns-concession','ns-owners-policy','ns-escrow','ns-doc-prep','ns-tax-cert','ns-593-proc',
+   'ns-transfer','ns-593-form','ns-recording','ns-notary','ns-hoa','ns-warranty',
+   'ns-staging','ns-repairs','ns-interest','ns-other'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('ns-list-pct').value='2.5';
+  document.getElementById('ns-buy-pct').value='2.5';
+  document.getElementById('ns-tax-rate').value='1.48';
+  document.getElementById('ns-loan-type').value='Conventional';
   calcNet();
+}
+
+async function downloadPDF(){
+  const seller=document.getElementById('ns-seller').value||'Seller';
+  const address=document.getElementById('ns-street').value||'Property';
+  const btn=event.target;
+  btn.textContent='Generating...';btn.disabled=true;
+  try{
+    // Build a print-friendly page and trigger download
+    const content=document.getElementById('ns-results-card').innerHTML;
+    const inputs=document.getElementById('tab-netsheet').querySelectorAll('input,select');
+    const formData={};
+    inputs.forEach(el=>{if(el.id)formData[el.id]=el.value;});
+
+    const printWin=window.open('','_blank','width=800,height=900');
+    printWin.document.write(`<!DOCTYPE html><html><head><title>Net Sheet - ${seller}</title>
+    <style>
+      body{font-family:'DM Sans',system-ui,sans-serif;color:#1a1917;padding:2rem;max-width:600px;margin:0 auto;font-size:13px;}
+      h1{font-family:Georgia,serif;font-size:22px;font-weight:400;margin-bottom:0.25rem;}
+      .sub{font-size:12px;color:#6b6760;margin-bottom:2rem;}
+      .line{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(0,0,0,0.06);}
+      .line.bold{font-weight:500;}
+      .line.indent{padding-left:1rem;font-size:12px;color:#6b6760;}
+      .neg{color:#b02020;}
+      .total{display:flex;justify-content:space-between;background:#f5ebe4;padding:1rem;border-radius:8px;margin-top:1rem;font-size:16px;font-weight:500;color:#c8602a;}
+      .disc{font-size:10px;color:#a09d98;margin-top:1rem;}
+      hr{border:none;border-top:1px solid rgba(0,0,0,0.08);margin:0.75rem 0;}
+      @media print{body{padding:1rem;}}
+    </style></head><body>
+    <h1>Seller Net Sheet</h1>
+    <div class="sub">${seller} &nbsp;·&nbsp; ${address}${document.getElementById('ns-city').value?', '+document.getElementById('ns-city').value:''} &nbsp;·&nbsp; ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</div>
+    ${document.getElementById('ns-results-card').querySelector('.ns-line,.ns-total,.ns-divider') ? '' : ''}
+    ${Array.from(document.getElementById('ns-results-card').querySelectorAll('.ns-line,.ns-divider,.ns-total')).map(el=>{
+      if(el.classList.contains('ns-divider'))return '<hr/>';
+      if(el.classList.contains('ns-total'))return `<div class="total"><span>${el.querySelector('.lbl').textContent}</span><span>${el.querySelector('.val').textContent}</span></div>`;
+      const lbl=el.querySelector('.lbl');const val=el.querySelector('.val');
+      const isIndent=el.style.paddingLeft==='1rem';
+      const isNeg=val&&val.classList.contains('neg');
+      return `<div class="line${el.style.fontWeight==='500'?' bold':''}${isIndent?' indent':''}"><span>${lbl?lbl.textContent:''}</span><span class="${isNeg?'neg':''}">${val?val.textContent:''}</span></div>`;
+    }).join('')}
+    <div class="disc">* Estimate only. Actual figures may vary. Prorated tax based on Kern County rate. Consult your escrow officer for exact numbers.</div>
+    <div class="disc" style="margin-top:0.5rem;">Prepared by Andrew Perez · DRE #01965640 · 661-619-7272</div>
+    </body></html>`);
+    printWin.document.close();
+    setTimeout(()=>{printWin.print();},500);
+  }catch(e){alert('Error generating PDF: '+e.message);}
+  btn.textContent='Download PDF';btn.disabled=false;
 }
 calcNet();
 </script>
