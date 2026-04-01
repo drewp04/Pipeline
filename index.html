@@ -145,10 +145,22 @@
     .fg.full { grid-column: 1; }
   }
   @media print {
-    .header, .ns-actions, .btn { display: none !important; }
-    .section { display: block !important; padding: 0; }
-    #tab-dashboard, #tab-clients, #tab-closings, #tab-lost { display: none !important; }
-    #tab-netsheet { display: block !important; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .header, .ns-actions, .btn, .tabs { display: none !important; }
+    .section { display: none !important; }
+    #tab-netsheet { display: block !important; padding: 0 !important; }
+    .net-sheet { max-width: 100%; }
+    .ns-card { page-break-inside: avoid; margin-bottom: 0.4rem !important; padding: 0.6rem !important; }
+    .ns-card h3 { font-size: 13px !important; margin-bottom: 0.4rem !important; }
+    .ns-row { margin-bottom: 4px !important; gap: 6px !important; }
+    .ns-label { font-size: 9px !important; }
+    .ns-input-wrap input, .ns-pct-wrap input, .ns-plain input { padding: 4px 6px !important; font-size: 10px !important; }
+    .ns-line { padding: 2px 0 !important; font-size: 11px !important; }
+    .ns-divider { margin: 4px 0 !important; }
+    .ns-total { padding: 0.5rem 0.75rem !important; }
+    .ns-total .val { font-size: 18px !important; }
+    #ns-donut { display: none !important; }
+    .disclaimer { font-size: 9px !important; margin-top: 4px !important; }
   }
 </style>
 </head>
@@ -934,51 +946,28 @@ function resetNet(){
   calcNet();
 }
 
-async function downloadPDF(){
+function downloadPDF(){
   const seller=document.getElementById('ns-seller').value||'Seller';
-  const address=document.getElementById('ns-street').value||'Property';
-  const btn=event.target;
-  btn.textContent='Generating...';btn.disabled=true;
-  try{
-    // Build a print-friendly page and trigger download
-    const content=document.getElementById('ns-results-card').innerHTML;
-    const inputs=document.getElementById('tab-netsheet').querySelectorAll('input,select');
-    const formData={};
-    inputs.forEach(el=>{if(el.id)formData[el.id]=el.value;});
-
-    const printWin=window.open('','_blank','width=800,height=900');
-    printWin.document.write(`<!DOCTYPE html><html><head><title>Net Sheet - ${seller}</title>
-    <style>
-      body{font-family:'DM Sans',system-ui,sans-serif;color:#1a1917;padding:2rem;max-width:600px;margin:0 auto;font-size:13px;}
-      h1{font-family:Georgia,serif;font-size:22px;font-weight:400;margin-bottom:0.25rem;}
-      .sub{font-size:12px;color:#6b6760;margin-bottom:2rem;}
-      .line{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(0,0,0,0.06);}
-      .line.bold{font-weight:500;}
-      .line.indent{padding-left:1rem;font-size:12px;color:#6b6760;}
-      .neg{color:#b02020;}
-      .total{display:flex;justify-content:space-between;background:#f5ebe4;padding:1rem;border-radius:8px;margin-top:1rem;font-size:16px;font-weight:500;color:#c8602a;}
-      .disc{font-size:10px;color:#a09d98;margin-top:1rem;}
-      hr{border:none;border-top:1px solid rgba(0,0,0,0.08);margin:0.75rem 0;}
-      @media print{body{padding:1rem;}}
-    </style></head><body>
-    <h1>Seller Net Sheet</h1>
-    <div class="sub">${seller} &nbsp;·&nbsp; ${address}${document.getElementById('ns-city').value?', '+document.getElementById('ns-city').value:''} &nbsp;·&nbsp; ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</div>
-    ${document.getElementById('ns-results-card').querySelector('.ns-line,.ns-total,.ns-divider') ? '' : ''}
-    ${Array.from(document.getElementById('ns-results-card').querySelectorAll('.ns-line,.ns-divider,.ns-total')).map(el=>{
-      if(el.classList.contains('ns-divider'))return '<hr/>';
-      if(el.classList.contains('ns-total'))return `<div class="total"><span>${el.querySelector('.lbl').textContent}</span><span>${el.querySelector('.val').textContent}</span></div>`;
+  const city=document.getElementById('ns-city').value||'';
+  const street=document.getElementById('ns-street').value||'';
+  const date=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  const lines=Array.from(document.getElementById('ns-results-card').querySelectorAll('.ns-line,.ns-divider,.ns-total')).map(el=>{
+    if(el.classList.contains('ns-divider'))return '<tr><td colspan="2" style="padding:3px 0;"><hr style="border:none;border-top:1px solid #eee;"/></td></tr>';
+    if(el.classList.contains('ns-total')){
       const lbl=el.querySelector('.lbl');const val=el.querySelector('.val');
-      const isIndent=el.style.paddingLeft==='1rem';
-      const isNeg=val&&val.classList.contains('neg');
-      return `<div class="line${el.style.fontWeight==='500'?' bold':''}${isIndent?' indent':''}"><span>${lbl?lbl.textContent:''}</span><span class="${isNeg?'neg':''}">${val?val.textContent:''}</span></div>`;
-    }).join('')}
-    <div class="disc">* Estimate only. Actual figures may vary. Prorated tax based on Kern County rate. Consult your escrow officer for exact numbers.</div>
-    <div class="disc" style="margin-top:0.5rem;">Prepared by Andrew Perez · DRE #01965640 · 661-619-7272</div>
-    </body></html>`);
-    printWin.document.close();
-    setTimeout(()=>{printWin.print();},500);
-  }catch(e){alert('Error generating PDF: '+e.message);}
-  btn.textContent='Download PDF';btn.disabled=false;
+      return '<tr style="background:#f5ebe4;"><td style="padding:8px 12px;font-size:13px;font-weight:500;color:#c8602a;">'+(lbl?lbl.textContent:'')+'</td><td style="padding:8px 12px;font-size:16px;font-weight:500;color:#c8602a;text-align:right;">'+(val?val.textContent:'')+'</td></tr>';
+    }
+    const lbl=el.querySelector('.lbl');const val=el.querySelector('.val');
+    const isIndent=el.style.paddingLeft==='1rem';
+    const isNeg=val&&val.classList.contains('neg');
+    const isBold=el.style.fontWeight==='500';
+    return '<tr><td style="padding:2px '+(isIndent?'20':'6')+'px;font-size:'+(isIndent?'10':'11')+'px;font-weight:'+(isBold?'600':'400')+';color:'+(isIndent?'#6b6760':'#1a1917')+';">'+(lbl?lbl.textContent:'')+'</td><td style="padding:2px 6px;text-align:right;font-size:'+(isIndent?'10':'11')+'px;color:'+(isNeg?'#b02020':'#1a1917')+';font-weight:'+(isBold?'600':'400')+';">'+(val?val.textContent:'')+'</td></tr>';
+  }).join('');
+  const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Net Sheet</title><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:Georgia,serif;color:#1a1917;padding:1rem;font-size:12px;}h1{font-size:18px;font-weight:400;margin-bottom:2px;}h2{font-size:10px;font-weight:400;color:#6b6760;margin-bottom:1rem;}table{width:100%;border-collapse:collapse;}@media print{@page{size:letter;margin:0.5in;}}</style></head><body><h1>Seller Net Sheet</h1><h2>'+seller+(street?' · '+street:'')+(city?', '+city:'')+' · '+date+'</h2><table>'+lines+'</table><p style="font-size:9px;color:#a09d98;margin-top:0.75rem;">* Estimate only. Actual figures may vary. Kern County rate 1.48%. Consult escrow officer for exact numbers.</p><p style="font-size:9px;color:#a09d98;margin-top:3px;">Prepared by Andrew Perez · DRE #01965640 · 661-619-7272</p></body></html>';
+  const win=window.open('','_blank','width=700,height=900');
+  win.document.write(html);
+  win.document.close();
+  setTimeout(function(){win.focus();win.print();},600);
 }
 calcNet();
 </script>
