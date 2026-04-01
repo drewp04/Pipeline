@@ -436,16 +436,32 @@
       </div>
 
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1rem;">
-        <div style="font-family:var(--font-display);font-size:17px;font-weight:400;margin-bottom:0.5rem;">Logo</div>
-        <div style="font-size:12px;color:var(--text-faint);margin-bottom:1rem;">Upload your logo to appear on net sheet PDFs.</div>
-        <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
-          <div id="logo-preview" style="width:80px;height:80px;border:1px dashed var(--border-strong);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-faint);overflow:hidden;">
-            No logo
+        <div style="font-family:var(--font-display);font-size:17px;font-weight:400;margin-bottom:0.5rem;">Photos & Logos</div>
+        <div style="font-size:12px;color:var(--text-faint);margin-bottom:1.25rem;">These appear on your net sheet PDFs.</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;">
+          <div>
+            <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-faint);margin-bottom:8px;">Agent headshot</div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+              <div id="headshot-preview" style="width:70px;height:70px;border:1px dashed var(--border-strong);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-faint);overflow:hidden;flex-shrink:0;">Photo</div>
+              <input type="file" id="p-headshot" accept="image/*" onchange="previewHeadshot()" style="display:none;" />
+              <button class="btn sm" onclick="document.getElementById('p-headshot').click()">Upload</button>
+            </div>
           </div>
           <div>
-            <input type="file" id="p-logo" accept="image/*" onchange="previewLogo()" style="display:none;" />
-            <button class="btn" onclick="document.getElementById('p-logo').click()">Upload logo</button>
-            <div style="font-size:11px;color:var(--text-faint);margin-top:6px;">PNG or JPG, max 1MB</div>
+            <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-faint);margin-bottom:8px;">Agent logo</div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+              <div id="agent-logo-preview" style="width:70px;height:70px;border:1px dashed var(--border-strong);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-faint);overflow:hidden;flex-shrink:0;">Logo</div>
+              <input type="file" id="p-agent-logo" accept="image/*" onchange="previewAgentLogo()" style="display:none;" />
+              <button class="btn sm" onclick="document.getElementById('p-agent-logo').click()">Upload</button>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-faint);margin-bottom:8px;">Broker logo</div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+              <div id="logo-preview" style="width:70px;height:70px;border:1px dashed var(--border-strong);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-faint);overflow:hidden;flex-shrink:0;">Logo</div>
+              <input type="file" id="p-logo" accept="image/*" onchange="previewLogo()" style="display:none;" />
+              <button class="btn sm" onclick="document.getElementById('p-logo').click()">Upload</button>
+            </div>
           </div>
         </div>
       </div>
@@ -619,7 +635,7 @@ async function loadProfile(){
     name:data.full_name||'',email:currentUser.email||'',phone:data.phone||'',
     dre:data.dre||'',website:data.website||'',brokerage:data.brokerage||'',
     brokerLic:data.broker_lic||'',officePhone:data.office_phone||'',
-    address:data.address||'',logo:data.logo||''
+    address:data.address||'',logo:data.logo||'',headshot:data.headshot||'',agentLogo:data.agent_logo||''
   };
   const f=id=>document.getElementById(id);
   if(f('p-name'))f('p-name').value=cachedProfile.name;
@@ -635,6 +651,14 @@ async function loadProfile(){
     const prev=document.getElementById('logo-preview');
     if(prev)prev.innerHTML='<img src="'+cachedProfile.logo+'" style="width:100%;height:100%;object-fit:contain;" />';
   }
+  if(cachedProfile.headshot){
+    const prev=document.getElementById('headshot-preview');
+    if(prev)prev.innerHTML='<img src="'+cachedProfile.headshot+'" style="width:100%;height:100%;object-fit:cover;" />';
+  }
+  if(cachedProfile.agentLogo){
+    const prev=document.getElementById('agent-logo-preview');
+    if(prev)prev.innerHTML='<img src="'+cachedProfile.agentLogo+'" style="width:100%;height:100%;object-fit:contain;" />';
+  }
   updateHeader(cachedProfile);
 }
 
@@ -644,6 +668,8 @@ async function saveProfile(){
   if(!currentUser){alert('Please sign in first.');return;}
   const btn=document.querySelector('#tab-settings .btn.primary');
   if(btn){btn.textContent='Saving...';btn.disabled=true;}
+  const headshotFile=document.getElementById('p-headshot').files[0];
+  const agentLogoFile=document.getElementById('p-agent-logo').files[0];
   const logoFile=document.getElementById('p-logo').files[0];
   const p={
     user_id:currentUser.id,
@@ -655,8 +681,24 @@ async function saveProfile(){
     broker_lic:document.getElementById('p-broker-lic').value.trim(),
     office_phone:document.getElementById('p-office-phone').value.trim(),
     address:document.getElementById('p-address').value.trim(),
-    logo:cachedProfile.logo||''
+    logo:cachedProfile.logo||'',
+    headshot:cachedProfile.headshot||'',
+    agent_logo:cachedProfile.agentLogo||''
   };
+  if(headshotFile){
+    await new Promise(resolve=>{
+      const reader=new FileReader();
+      reader.onload=e=>{p.headshot=e.target.result;resolve();};
+      reader.readAsDataURL(headshotFile);
+    });
+  }else{p.headshot=cachedProfile.headshot||'';}
+  if(agentLogoFile){
+    await new Promise(resolve=>{
+      const reader=new FileReader();
+      reader.onload=e=>{p.agent_logo=e.target.result;resolve();};
+      reader.readAsDataURL(agentLogoFile);
+    });
+  }else{p.agent_logo=cachedProfile.agentLogo||'';}
   if(logoFile){
     await new Promise(resolve=>{
       const reader=new FileReader();
@@ -667,7 +709,7 @@ async function saveProfile(){
   const{error}=await sb.from('profiles').upsert(p,{onConflict:'user_id'});
   if(error){alert('Error saving: '+error.message);}
   else{
-    cachedProfile={name:p.full_name,email:currentUser.email,phone:p.phone,dre:p.dre,website:p.website,brokerage:p.brokerage,brokerLic:p.broker_lic,officePhone:p.office_phone,address:p.address,logo:p.logo};
+    cachedProfile={name:p.full_name,email:currentUser.email,phone:p.phone,dre:p.dre,website:p.website,brokerage:p.brokerage,brokerLic:p.broker_lic,officePhone:p.office_phone,address:p.address,logo:p.logo,headshot:p.headshot,agentLogo:p.agent_logo};
     if(p.logo){const prev=document.getElementById('logo-preview');if(prev)prev.innerHTML='<img src="'+p.logo+'" style="width:100%;height:100%;object-fit:contain;" />';}
     updateHeader(cachedProfile);
     const saved=document.getElementById('profile-saved');
@@ -682,6 +724,28 @@ function previewLogo(){
   const reader=new FileReader();
   reader.onload=function(e){
     const prev=document.getElementById('logo-preview');
+    if(prev)prev.innerHTML='<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:contain;" />';
+  };
+  reader.readAsDataURL(file);
+}
+
+function previewHeadshot(){
+  const file=document.getElementById('p-headshot').files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const prev=document.getElementById('headshot-preview');
+    if(prev)prev.innerHTML='<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover;" />';
+  };
+  reader.readAsDataURL(file);
+}
+
+function previewAgentLogo(){
+  const file=document.getElementById('p-agent-logo').files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const prev=document.getElementById('agent-logo-preview');
     if(prev)prev.innerHTML='<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:contain;" />';
   };
   reader.readAsDataURL(file);
@@ -1141,49 +1205,99 @@ function resetNet(){
 }
 
 async function downloadPDF(){
-  const seller=document.getElementById('ns-seller').value||'Seller';
-  const city=document.getElementById('ns-city').value||'';
+  const sellerName=document.getElementById('ns-seller').value||'';
   const street=document.getElementById('ns-street').value||'';
+  const city=document.getElementById('ns-city').value||'';
+  const state=document.getElementById('ns-state').value||'CA';
+  const zip=document.getElementById('ns-zip').value||'';
+  const salesPrice=gv('ns-price');
+  const loanType=document.getElementById('ns-loan-type').value||'Conventional';
+  const coe=document.getElementById('ns-coe').value||'';
+  const coeFormatted=coe?new Date(coe+'T12:00:00').toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'}):'';
+  const propAddress=[street,[city,state].filter(Boolean).join(', '),zip].filter(Boolean).join(' ');
   const date=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
 
-  // Fetch fresh profile from Supabase
-  let agentLine='AgentDesk';
-  let logoHtml='';
+  // Fetch profile
+  let agent={name:'',dre:'',phone:'',email:'',brokerage:'',brokerLic:'',address:'',website:'',logo:'',headshot:''};
   if(currentUser){
     const{data}=await sb.from('profiles').select('*').eq('user_id',currentUser.id).single();
     if(data){
-      const parts=[];
-      if(data.full_name)parts.push(data.full_name);
-      if(data.dre)parts.push('DRE #'+data.dre);
-      if(data.phone)parts.push(data.phone);
-      if(data.brokerage)parts.push(data.brokerage);
-      if(data.broker_lic)parts.push('Broker Lic #'+data.broker_lic);
-      if(data.address)parts.push(data.address);
-      if(data.website)parts.push(data.website);
-      if(parts.length)agentLine=parts.join(' · ');
-      if(data.logo)logoHtml='<div style="margin-bottom:0.5rem;"><img src="'+data.logo+'" style="height:40px;object-fit:contain;" /></div>';
+      agent={
+        name:data.full_name||'',dre:data.dre||'',phone:data.phone||'',
+        email:currentUser.email||'',brokerage:data.brokerage||'',
+        brokerLic:data.broker_lic||'',address:data.address||'',
+        website:data.website||'',logo:data.logo||'',headshot:data.headshot||''
+      };
     }
   }
 
-  const lines=Array.from(document.getElementById('ns-results-card').querySelectorAll('.ns-line,.ns-divider,.ns-total')).map(el=>{
-    if(el.classList.contains('ns-divider'))return '<tr><td colspan="2" style="padding:3px 0;"><hr style="border:none;border-top:1px solid #eee;"/></td></tr>';
+  // Build fee rows
+  const feeRows=Array.from(document.getElementById('ns-results-card').querySelectorAll('.ns-line,.ns-divider,.ns-total')).map(el=>{
+    if(el.classList.contains('ns-divider'))return '';
     if(el.classList.contains('ns-total')){
       const lbl=el.querySelector('.lbl');const val=el.querySelector('.val');
-      return '<tr style="background:#f5ebe4;"><td style="padding:8px 12px;font-size:13px;font-weight:500;color:#c8602a;">'+(lbl?lbl.textContent:'')+'</td><td style="padding:8px 12px;font-size:16px;font-weight:500;color:#c8602a;text-align:right;">'+(val?val.textContent:'')+'</td></tr>';
+      return '<tr style="background:#1a1917;color:white;"><td style="padding:8px 12px;font-weight:600;font-size:13px;">'+(lbl?lbl.textContent:'')+'</td><td style="padding:8px 12px;text-align:right;font-weight:600;font-size:15px;">'+(val?val.textContent:'')+'</td></tr>';
     }
     const lbl=el.querySelector('.lbl');const val=el.querySelector('.val');
     const isIndent=el.style.paddingLeft==='1rem';
     const isNeg=val&&val.classList.contains('neg');
     const isBold=el.style.fontWeight==='500';
-    return '<tr><td style="padding:2px '+(isIndent?'20':'6')+'px;font-size:'+(isIndent?'10':'11')+'px;font-weight:'+(isBold?'600':'400')+';color:'+(isIndent?'#6b6760':'#1a1917')+';">'+(lbl?lbl.textContent:'')+'</td><td style="padding:2px 6px;text-align:right;font-size:'+(isIndent?'10':'11')+'px;color:'+(isNeg?'#b02020':'#1a1917')+';font-weight:'+(isBold?'600':'400')+';">'+(val?val.textContent:'')+'</td></tr>';
+    if(isBold){
+      return '<tr style="background:#333;color:white;"><td style="padding:6px 12px;font-weight:600;font-size:12px;">'+(lbl?lbl.textContent:'')+'</td><td style="padding:6px 12px;text-align:right;font-weight:600;font-size:12px;">'+(val?val.textContent:'')+'</td></tr>';
+    }
+    return '<tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:4px '+(isIndent?'24':'10')+'px;font-size:11px;color:#333;">'+(lbl?lbl.textContent:'')+'</td><td style="padding:4px 10px;text-align:right;font-size:11px;color:'+(isNeg?'#c0392b':'#333')+';">'+(val?val.textContent:'')+'</td></tr>';
   }).join('');
 
-  const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Net Sheet</title><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:Georgia,serif;color:#1a1917;padding:1rem;font-size:12px;}h1{font-size:18px;font-weight:400;margin-bottom:2px;}h2{font-size:10px;font-weight:400;color:#6b6760;margin-bottom:1rem;}table{width:100%;border-collapse:collapse;}@media print{@page{size:letter;margin:0.5in;}}</style></head><body>'+logoHtml+'<h1>Seller Net Sheet</h1><h2>'+seller+(street?' · '+street:'')+(city?', '+city:'')+' · '+date+'</h2><table>'+lines+'</table><p style="font-size:9px;color:#a09d98;margin-top:0.75rem;">* Estimate only. Actual figures may vary. Kern County rate 1.48%. Consult escrow officer for exact numbers.</p><p style="font-size:9px;color:#a09d98;margin-top:3px;">'+agentLine+'</p></body></html>';
+  // Agent footer
+  const agentFooter=`<table style="width:100%;margin-top:1rem;border-top:2px solid #1a1917;padding-top:0.75rem;">
+    <tr>
+      ${agent.headshot?`<td style="width:60px;vertical-align:top;padding-right:12px;"><img src="${agent.headshot}" style="width:55px;height:55px;border-radius:50%;object-fit:cover;" /></td>`:''}
+      <td style="vertical-align:top;">
+        ${agent.name?`<div style="font-weight:600;font-size:12px;">${agent.name}</div>`:''}
+        ${agent.dre?`<div style="font-size:10px;color:#555;">DRE # ${agent.dre}</div>`:''}
+        ${agent.phone?`<div style="font-size:10px;color:#555;">${agent.phone}</div>`:''}
+        ${agent.email?`<div style="font-size:10px;color:#555;">${agent.email}</div>`:''}
+        ${agent.brokerage?`<div style="font-size:10px;color:#555;">${agent.brokerage}${agent.brokerLic?' · Broker Lic # '+agent.brokerLic:''}</div>`:''}
+        ${agent.address?`<div style="font-size:10px;color:#555;">${agent.address}</div>`:''}
+      </td>
+      <td style="vertical-align:middle;text-align:right;">
+        ${agent.agentLogo?`<img src="${agent.agentLogo}" style="max-height:36px;max-width:100px;object-fit:contain;display:block;margin-bottom:4px;" />`:''}
+        ${agent.logo?`<img src="${agent.logo}" style="max-height:36px;max-width:100px;object-fit:contain;display:block;" />`:''}
+      </td>
+    </tr>
+  </table>`;
 
-  const win=window.open('','_blank','width=700,height=900');
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Seller Net Sheet</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:Arial,sans-serif;color:#1a1917;padding:1rem;font-size:11px;}
+    table{width:100%;border-collapse:collapse;}
+    @media print{@page{size:letter;margin:0.4in;}}
+  </style></head><body>
+  <div style="background:#1a1917;color:white;padding:10px 14px;margin-bottom:0.75rem;border-radius:4px;">
+    <div style="font-size:18px;font-weight:700;letter-spacing:0.02em;">Estimated Seller's Net Sheet</div>
+  </div>
+  <table style="margin-bottom:0.75rem;border:1px solid #ddd;border-radius:4px;overflow:hidden;">
+    <tr style="background:#f5f5f5;">
+      <td style="padding:6px 12px;"><strong>Seller:</strong> ${sellerName||'—'}</td>
+      <td style="padding:6px 12px;"><strong>Sales Price:</strong> ${salesPrice?'$'+Math.round(salesPrice).toLocaleString():'—'}</td>
+      <td style="padding:6px 12px;"><strong>Loan Type:</strong> ${loanType}</td>
+    </tr>
+    <tr>
+      <td style="padding:6px 12px;"><strong>Property:</strong> ${propAddress||'—'}</td>
+      <td style="padding:6px 12px;"><strong>Est. Closing Date:</strong> ${coeFormatted||'—'}</td>
+      <td style="padding:6px 12px;"><strong>Prepared:</strong> ${date}</td>
+    </tr>
+  </table>
+  <table>${feeRows}</table>
+  <p style="font-size:8px;color:#999;margin-top:0.5rem;">* Estimate only. Actual figures may vary. Kern County rate 1.48%. Consult your escrow officer for exact numbers.</p>
+  ${agentFooter}
+  </body></html>`;
+
+  const win=window.open('','_blank','width=750,height:950');
   win.document.write(html);
   win.document.close();
-  setTimeout(function(){win.focus();win.print();},600);
+  setTimeout(function(){win.focus();win.print();},700);
 }
 setTimeout(function(){resetNet();},100);
 </script>
