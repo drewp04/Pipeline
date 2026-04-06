@@ -134,6 +134,47 @@
   .ns-total .val { font-family: var(--font-display); font-size: 28px; color: var(--accent); }
   .ns-actions { display: flex; gap: 8px; margin-top: 1rem; }
   .disclaimer { font-size: 11px; color: var(--text-faint); margin-top: 0.75rem; line-height: 1.5; }
+
+  /* ── DAILY BRIEFING STYLES ── */
+  .briefing-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 12px; }
+  .briefing-date { font-family: var(--font-display); font-size: 22px; font-weight: 400; color: var(--text); }
+  .briefing-date span { color: var(--accent); font-style: italic; }
+  .briefing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 1.5rem; }
+  .briefing-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; }
+  .briefing-card-title { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-faint); margin-bottom: 1rem; display: flex; align-items: center; gap: 6px; }
+  .briefing-card-title .icon { font-size: 14px; }
+  .briefing-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .briefing-item:last-child { border-bottom: none; }
+  .briefing-item-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+  .briefing-item-content { flex: 1; min-width: 0; }
+  .briefing-item-name { font-weight: 500; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .briefing-item-detail { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .briefing-item-action { font-size: 11px; color: var(--accent); margin-top: 3px; font-style: italic; }
+  .briefing-item-meta { font-size: 11px; font-weight: 500; color: var(--text-faint); text-align: right; flex-shrink: 0; }
+  .briefing-empty { text-align: center; padding: 1.5rem; color: var(--text-faint); font-size: 13px; }
+  .coe-urgent { color: var(--red); font-weight: 600; }
+  .coe-soon { color: var(--amber); font-weight: 500; }
+  .coe-ok { color: var(--green); }
+  .month-progress { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1.5rem; }
+  .month-progress-title { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-faint); margin-bottom: 1rem; }
+  .month-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 1rem; }
+  .month-stat { text-align: center; }
+  .month-stat-val { font-family: var(--font-display); font-size: 24px; font-weight: 400; color: var(--text); }
+  .month-stat-val.accent { color: var(--accent); }
+  .month-stat-val.green { color: var(--green); }
+  .month-stat-label { font-size: 11px; color: var(--text-faint); margin-top: 2px; }
+  .progress-bar-wrap { background: var(--surface2); border-radius: 20px; height: 6px; overflow: hidden; }
+  .progress-bar { height: 100%; border-radius: 20px; background: linear-gradient(90deg, var(--accent), #e88a50); transition: width 0.5s ease; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-faint); margin-top: 5px; }
+  .briefing-full { grid-column: 1 / -1; }
+  .refresh-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); cursor: pointer; padding: 5px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); transition: all 0.15s; }
+  .refresh-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .pipeline-funnel { display: flex; gap: 8px; align-items: flex-end; padding: 0.5rem 0; }
+  .funnel-stage { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .funnel-bar { width: 100%; border-radius: 4px 4px 0 0; min-height: 4px; transition: height 0.4s ease; }
+  .funnel-count { font-family: var(--font-display); font-size: 18px; font-weight: 400; }
+  .funnel-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-faint); text-align: center; }
+
   @media (max-width: 640px) {
     .header { padding: 1rem 1rem 0; }
     .section { padding: 1.25rem 1rem; }
@@ -143,6 +184,8 @@
     .ns-row, .ns-row.triple { grid-template-columns: 1fr; }
     .form-grid { grid-template-columns: 1fr; }
     .fg.full { grid-column: 1; }
+    .briefing-grid { grid-template-columns: 1fr; }
+    .month-stats { grid-template-columns: repeat(2, 1fr); }
   }
   @media print {
     * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -197,12 +240,64 @@
       </div>
     </div>
     <div class="tabs">
+      <div class="tab" onclick="showTab('briefing')">☀ Today</div>
       <div class="tab active" onclick="showTab('dashboard')">Dashboard</div>
       <div class="tab" onclick="showTab('clients')">Clients</div>
       <div class="tab" onclick="showTab('closings')">Closings</div>
       <div class="tab" onclick="showTab('lost')">Lost Deals</div>
       <div class="tab" onclick="showTab('netsheet')">Net Sheet</div>
       <div class="tab" onclick="showTab('settings')">⚙ Profile</div>
+    </div>
+  </div>
+
+  <!-- DAILY BRIEFING -->
+  <div id="tab-briefing" class="section">
+    <div class="briefing-header">
+      <div>
+        <div class="briefing-date" id="briefing-date-label">Good morning — <span>Monday</span></div>
+        <div style="font-size:13px;color:var(--text-muted);margin-top:2px;" id="briefing-full-date"></div>
+      </div>
+      <button class="refresh-btn" onclick="renderBriefing()">↻ Refresh</button>
+    </div>
+
+    <!-- Month Progress -->
+    <div class="month-progress">
+      <div class="month-progress-title">📅 April Progress</div>
+      <div class="month-stats" id="briefing-month-stats"></div>
+      <div class="progress-bar-wrap"><div class="progress-bar" id="briefing-month-bar" style="width:0%"></div></div>
+      <div class="progress-label"><span id="briefing-month-start"></span><span id="briefing-month-end"></span></div>
+    </div>
+
+    <div class="briefing-grid">
+      <!-- Closing Soon -->
+      <div class="briefing-card">
+        <div class="briefing-card-title"><span class="icon">🏁</span> Closing Soon</div>
+        <div id="briefing-closing-soon"></div>
+      </div>
+
+      <!-- Active Pipeline -->
+      <div class="briefing-card">
+        <div class="briefing-card-title"><span class="icon">🔄</span> Active Pipeline</div>
+        <div id="briefing-pipeline"></div>
+      </div>
+
+      <!-- Needs Attention -->
+      <div class="briefing-card">
+        <div class="briefing-card-title"><span class="icon">⚡</span> Needs Attention</div>
+        <div id="briefing-attention"></div>
+      </div>
+
+      <!-- Pipeline Funnel -->
+      <div class="briefing-card">
+        <div class="briefing-card-title"><span class="icon">📊</span> Pipeline Funnel</div>
+        <div class="pipeline-funnel" id="briefing-funnel"></div>
+      </div>
+
+      <!-- This Month's Closings -->
+      <div class="briefing-card briefing-full">
+        <div class="briefing-card-title"><span class="icon">✅</span> Closed This Month</div>
+        <div id="briefing-closed-month"></div>
+      </div>
     </div>
   </div>
 
@@ -265,7 +360,6 @@
   <!-- NET SHEET -->
   <div id="tab-netsheet" class="section">
     <div class="net-sheet">
-      <!-- SALE INFO -->
       <div class="ns-card">
         <h3>Sale information</h3>
         <div class="ns-row">
@@ -287,8 +381,6 @@
           <div class="ns-field"><div class="ns-label">Loan type</div><div class="ns-plain"><select id="ns-loan-type" onchange="calcNet()" style="width:100%;font-family:var(--font-body);font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius);background:var(--bg);color:var(--text);outline:none;"><option>Conventional</option><option>FHA</option><option>VA</option><option>Cash</option><option>Other</option></select></div></div>
         </div>
       </div>
-
-      <!-- COMMISSION -->
       <div class="ns-card">
         <h3>Commission</h3>
         <div class="ns-row">
@@ -309,8 +401,6 @@
         </div>
         </div>
       </div>
-
-      <!-- TITLE FEES -->
       <div class="ns-card">
         <h3>Title fees</h3>
         <div class="ns-row">
@@ -325,8 +415,6 @@
           <div class="ns-field"><div class="ns-label">593 processing fee (CA)</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-593-proc" type="number" min="0" placeholder="45" oninput="calcNet()" /></div></div>
         </div>
       </div>
-
-      <!-- OTHER FEES -->
       <div class="ns-card">
         <h3>Other fees</h3>
         <div class="ns-row">
@@ -353,8 +441,6 @@
           <div class="ns-field"><div class="ns-label">Other costs</div><div class="ns-input-wrap"><span class="pfx">$</span><input id="ns-other" type="number" min="0" placeholder="0" oninput="calcNet()" /></div></div>
         </div>
       </div>
-
-      <!-- RESULTS -->
       <div class="ns-card" id="ns-results-card">
         <h3>Net at close</h3>
         <div style="display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;">
@@ -408,12 +494,12 @@
       </div>
     </div>
   </div>
+
   <!-- SETTINGS -->
   <div id="tab-settings" class="section">
     <div style="max-width:600px;">
       <div style="font-family:var(--font-display);font-size:24px;font-weight:400;margin-bottom:0.25rem;">Profile & Settings</div>
       <div style="font-size:13px;color:var(--text-faint);margin-bottom:1.5rem;">Your info appears on net sheet PDFs and the app header.</div>
-
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1rem;">
         <div style="font-family:var(--font-display);font-size:17px;font-weight:400;margin-bottom:1rem;">Agent information</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
@@ -424,7 +510,6 @@
           <div class="fg"><label>Website</label><input id="p-website" placeholder="www.yourdomain.com" /></div>
         </div>
       </div>
-
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1rem;">
         <div style="font-family:var(--font-display);font-size:17px;font-weight:400;margin-bottom:1rem;">Brokerage information</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
@@ -434,7 +519,6 @@
           <div class="fg full" style="grid-column:1/-1;"><label>Office address</label><input id="p-address" placeholder="1234 Main St, Bakersfield, CA 93301" /></div>
         </div>
       </div>
-
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1rem;">
         <div style="font-family:var(--font-display);font-size:17px;font-weight:400;margin-bottom:0.5rem;">Photos & Logos</div>
         <div style="font-size:12px;color:var(--text-faint);margin-bottom:1.25rem;">These appear on your net sheet PDFs.</div>
@@ -465,7 +549,6 @@
           </div>
         </div>
       </div>
-
       <div style="display:flex;gap:8px;margin-top:1rem;">
         <button class="btn primary" onclick="saveProfile()">Save profile</button>
         <div id="profile-saved" style="display:none;font-size:13px;color:var(--green);align-self:center;">✓ Saved!</div>
@@ -620,6 +703,7 @@ sb.auth.onAuthStateChange(async(event,session)=>{
     document.getElementById('app').style.display='block';
     document.getElementById('user-email').textContent=currentUser.email;
     await loadAll();
+    renderBriefing();
   }
 });
 
@@ -631,12 +715,7 @@ async function loadProfile(){
   if(!currentUser)return;
   const{data,error}=await sb.from('profiles').select('*').eq('user_id',currentUser.id).single();
   if(error||!data)return;
-  cachedProfile={
-    name:data.full_name||'',email:currentUser.email||'',phone:data.phone||'',
-    dre:data.dre||'',website:data.website||'',brokerage:data.brokerage||'',
-    brokerLic:data.broker_lic||'',officePhone:data.office_phone||'',
-    address:data.address||'',logo:data.logo||'',headshot:data.headshot||'',agentLogo:data.agent_logo||''
-  };
+  cachedProfile={name:data.full_name||'',email:currentUser.email||'',phone:data.phone||'',dre:data.dre||'',website:data.website||'',brokerage:data.brokerage||'',brokerLic:data.broker_lic||'',officePhone:data.office_phone||'',address:data.address||'',logo:data.logo||'',headshot:data.headshot||'',agentLogo:data.agent_logo||''};
   const f=id=>document.getElementById(id);
   if(f('p-name'))f('p-name').value=cachedProfile.name;
   if(f('p-email'))f('p-email').value=cachedProfile.email;
@@ -647,31 +726,22 @@ async function loadProfile(){
   if(f('p-broker-lic'))f('p-broker-lic').value=cachedProfile.brokerLic;
   if(f('p-office-phone'))f('p-office-phone').value=cachedProfile.officePhone;
   if(f('p-address'))f('p-address').value=cachedProfile.address;
-  if(cachedProfile.logo){
-    const prev=document.getElementById('logo-preview');
-    if(prev)prev.innerHTML='<img src="'+cachedProfile.logo+'" style="width:100%;height:100%;object-fit:contain;" />';
-  }
-  if(cachedProfile.headshot){
-    const prev=document.getElementById('headshot-preview');
-    if(prev)prev.innerHTML='<img src="'+cachedProfile.headshot+'" style="width:100%;height:100%;object-fit:cover;" />';
-  }
-  if(cachedProfile.agentLogo){
-    const prev=document.getElementById('agent-logo-preview');
-    if(prev)prev.innerHTML='<img src="'+cachedProfile.agentLogo+'" style="width:100%;height:100%;object-fit:contain;" />';
-  }
+  if(cachedProfile.logo){const prev=document.getElementById('logo-preview');if(prev)prev.innerHTML='<img src="'+cachedProfile.logo+'" style="width:100%;height:100%;object-fit:contain;" />';}
+  if(cachedProfile.headshot){const prev=document.getElementById('headshot-preview');if(prev)prev.innerHTML='<img src="'+cachedProfile.headshot+'" style="width:100%;height:100%;object-fit:cover;" />';}
+  if(cachedProfile.agentLogo){const prev=document.getElementById('agent-logo-preview');if(prev)prev.innerHTML='<img src="'+cachedProfile.agentLogo+'" style="width:100%;height:100%;object-fit:contain;" />';}
   updateHeader(cachedProfile);
 }
 
 function getProfile(){return cachedProfile;}
 
-function compressImage(file, maxWidth, quality){
+function compressImage(file,maxWidth,quality){
   return new Promise(resolve=>{
     const reader=new FileReader();
     reader.onload=function(e){
       const img=new Image();
       img.onload=function(){
         const canvas=document.createElement('canvas');
-        let w=img.width, h=img.height;
+        let w=img.width,h=img.height;
         if(w>maxWidth){h=Math.round(h*maxWidth/w);w=maxWidth;}
         canvas.width=w;canvas.height=h;
         const ctx=canvas.getContext('2d');
@@ -691,26 +761,10 @@ async function saveProfile(){
   const headshotFile=document.getElementById('p-headshot').files[0];
   const agentLogoFile=document.getElementById('p-agent-logo').files[0];
   const logoFile=document.getElementById('p-logo').files[0];
-  const p={
-    user_id:currentUser.id,
-    full_name:document.getElementById('p-name').value.trim(),
-    phone:document.getElementById('p-phone').value.trim(),
-    dre:document.getElementById('p-dre').value.trim(),
-    website:document.getElementById('p-website').value.trim(),
-    brokerage:document.getElementById('p-brokerage').value.trim(),
-    broker_lic:document.getElementById('p-broker-lic').value.trim(),
-    office_phone:document.getElementById('p-office-phone').value.trim(),
-    address:document.getElementById('p-address').value.trim(),
-    logo:cachedProfile.logo||'',
-    headshot:cachedProfile.headshot||'',
-    agent_logo:cachedProfile.agentLogo||''
-  };
-  if(headshotFile){p.headshot=await compressImage(headshotFile,300,0.7);}
-  else{p.headshot=cachedProfile.headshot||'';}
-  if(agentLogoFile){p.agent_logo=await compressImage(agentLogoFile,400,0.8);}
-  else{p.agent_logo=cachedProfile.agentLogo||'';}
-  if(logoFile){p.logo=await compressImage(logoFile,400,0.8);}
-  else{p.logo=cachedProfile.logo||'';}
+  const p={user_id:currentUser.id,full_name:document.getElementById('p-name').value.trim(),phone:document.getElementById('p-phone').value.trim(),dre:document.getElementById('p-dre').value.trim(),website:document.getElementById('p-website').value.trim(),brokerage:document.getElementById('p-brokerage').value.trim(),broker_lic:document.getElementById('p-broker-lic').value.trim(),office_phone:document.getElementById('p-office-phone').value.trim(),address:document.getElementById('p-address').value.trim(),logo:cachedProfile.logo||'',headshot:cachedProfile.headshot||'',agent_logo:cachedProfile.agentLogo||''};
+  if(headshotFile){p.headshot=await compressImage(headshotFile,300,0.7);}else{p.headshot=cachedProfile.headshot||'';}
+  if(agentLogoFile){p.agent_logo=await compressImage(agentLogoFile,400,0.8);}else{p.agent_logo=cachedProfile.agentLogo||'';}
+  if(logoFile){p.logo=await compressImage(logoFile,400,0.8);}else{p.logo=cachedProfile.logo||'';}
   const{error}=await sb.from('profiles').upsert(p,{onConflict:'user_id'});
   if(error){alert('Error saving: '+error.message);}
   else{
@@ -723,39 +777,16 @@ async function saveProfile(){
   if(btn){btn.textContent='Save profile';btn.disabled=false;}
 }
 
-async function previewLogo(){
-  const file=document.getElementById('p-logo').files[0];
-  if(!file)return;
-  const compressed=await compressImage(file,400,0.8);
-  const prev=document.getElementById('logo-preview');
-  if(prev)prev.innerHTML='<img src="'+compressed+'" style="width:100%;height:100%;object-fit:contain;" />';
-}
-
-async function previewHeadshot(){
-  const file=document.getElementById('p-headshot').files[0];
-  if(!file)return;
-  const compressed=await compressImage(file,300,0.7);
-  const prev=document.getElementById('headshot-preview');
-  if(prev)prev.innerHTML='<img src="'+compressed+'" style="width:100%;height:100%;object-fit:cover;" />';
-}
-
-async function previewAgentLogo(){
-  const file=document.getElementById('p-agent-logo').files[0];
-  if(!file)return;
-  const compressed=await compressImage(file,400,0.8);
-  const prev=document.getElementById('agent-logo-preview');
-  if(prev)prev.innerHTML='<img src="'+compressed+'" style="width:100%;height:100%;object-fit:contain;" />';
-}
+async function previewLogo(){const file=document.getElementById('p-logo').files[0];if(!file)return;const compressed=await compressImage(file,400,0.8);const prev=document.getElementById('logo-preview');if(prev)prev.innerHTML='<img src="'+compressed+'" style="width:100%;height:100%;object-fit:contain;" />';}
+async function previewHeadshot(){const file=document.getElementById('p-headshot').files[0];if(!file)return;const compressed=await compressImage(file,300,0.7);const prev=document.getElementById('headshot-preview');if(prev)prev.innerHTML='<img src="'+compressed+'" style="width:100%;height:100%;object-fit:cover;" />';}
+async function previewAgentLogo(){const file=document.getElementById('p-agent-logo').files[0];if(!file)return;const compressed=await compressImage(file,400,0.8);const prev=document.getElementById('agent-logo-preview');if(prev)prev.innerHTML='<img src="'+compressed+'" style="width:100%;height:100%;object-fit:contain;" />';}
 
 function updateHeader(p){
   const brand=document.querySelector('.brand');
   if(!brand)return;
-  if(p.name){
-    brand.innerHTML=p.name+' — <em>AgentDesk</em>';
-  }else{
-    brand.innerHTML='Agent<em>Desk</em>';
-  }
+  if(p.name){brand.innerHTML=p.name+' — <em>AgentDesk</em>';}else{brand.innerHTML='Agent<em>Desk</em>';}
 }
+
 async function loadClients(){const{data,error}=await sb.from('clients').select('*').order('created_at',{ascending:false});if(!error&&data)clients=data;}
 async function loadClosings(){const{data,error}=await sb.from('closings').select('*').order('created_at',{ascending:false});if(!error&&data)closings=data;}
 
@@ -771,10 +802,111 @@ function typeBadge(t){return`<span class="badge ${t==='buyer'?'b-buyer':'b-selle
 function srcHtml(s){return`<div class="src"><div class="dot" style="background:${SRC_COLORS[s]||'#888'}"></div>${s||'—'}</div>`;}
 function clientBtns(id){return`<div class="action-btns"><button class="btn sm" onclick="editClient('${id}')">Edit</button><button class="btn sm danger" onclick="deleteClient('${id}')">Delete</button></div>`;}
 function closingBtns(id){return`<div class="action-btns"><button class="btn sm" onclick="editClosing('${id}')">Edit</button><button class="btn sm danger" onclick="deleteClosing('${id}')">Delete</button></div>`;}
+function toggleLostReason(){const stage=document.getElementById('f-stage').value;document.getElementById('lost-reason-section').style.display=stage==='Lost'?'block':'none';}
 
-function toggleLostReason(){
-  const stage=document.getElementById('f-stage').value;
-  document.getElementById('lost-reason-section').style.display=stage==='Lost'?'block':'none';
+// ── DAILY BRIEFING ──
+function renderBriefing(){
+  const now=new Date();
+  const dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const hour=now.getHours();
+  const greeting=hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
+  document.getElementById('briefing-date-label').innerHTML=greeting+' — <span>'+dayNames[now.getDay()]+'</span>';
+  document.getElementById('briefing-full-date').textContent=monthNames[now.getMonth()]+' '+now.getDate()+', '+now.getFullYear();
+
+  // Month progress
+  const monthStart=new Date(now.getFullYear(),now.getMonth(),1);
+  const monthEnd=new Date(now.getFullYear(),now.getMonth()+1,0);
+  const daysInMonth=monthEnd.getDate();
+  const dayOfMonth=now.getDate();
+  const monthPct=Math.round((dayOfMonth/daysInMonth)*100);
+  document.getElementById('briefing-month-bar').style.width=monthPct+'%';
+  document.getElementById('briefing-month-start').textContent=monthNames[now.getMonth()]+' 1';
+  document.getElementById('briefing-month-end').textContent=monthNames[now.getMonth()]+' '+daysInMonth;
+
+  // Month closings
+  const thisMonthClosings=closings.filter(c=>{
+    if(!c.coe)return false;
+    try{const d=new Date(c.coe+'T12:00:00');return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();}catch(e){return false;}
+  });
+  const monthGCI=thisMonthClosings.reduce((a,c)=>a+commAmt(c.price||0,c.commission||0),0);
+  const monthVol=thisMonthClosings.reduce((a,c)=>a+(c.price||0),0);
+  const activeClients=clients.filter(c=>c.stage!=='Closed'&&c.stage!=='Lost');
+  const inEscrow=clients.filter(c=>c.stage==='In Escrow');
+
+  document.getElementById('briefing-month-stats').innerHTML=[
+    {val:thisMonthClosings.length,label:'Closings this month',cls:'accent'},
+    {val:fmtK(monthGCI),label:'GCI this month',cls:'green'},
+    {val:activeClients.length,label:'Active clients',cls:''},
+    {val:inEscrow.length,label:'In escrow',cls:''},
+  ].map(s=>`<div class="month-stat"><div class="month-stat-val ${s.cls}">${s.val}</div><div class="month-stat-label">${s.label}</div></div>`).join('');
+
+  // Closing soon (In Escrow with COE)
+  const today=new Date();today.setHours(0,0,0,0);
+  const escrowClients=clients.filter(c=>c.stage==='In Escrow'&&c.coe).map(c=>{
+    const coe=new Date(c.coe+'T12:00:00');
+    const diff=Math.ceil((coe-today)/(1000*60*60*24));
+    return{...c,daysUntilCoe:diff};
+  }).sort((a,b)=>a.daysUntilCoe-b.daysUntilCoe);
+
+  document.getElementById('briefing-closing-soon').innerHTML=escrowClients.length?escrowClients.slice(0,5).map(c=>{
+    const cls=c.daysUntilCoe<=3?'coe-urgent':c.daysUntilCoe<=10?'coe-soon':'coe-ok';
+    const label=c.daysUntilCoe<0?'Overdue':c.daysUntilCoe===0?'Today!':c.daysUntilCoe===1?'Tomorrow':c.daysUntilCoe+' days';
+    const gci=c.sale_price&&c.commission?commAmt(c.sale_price,c.commission):0;
+    return`<div class="briefing-item">
+      <div class="briefing-item-dot" style="background:${c.daysUntilCoe<=3?'var(--red)':c.daysUntilCoe<=10?'var(--amber)':'var(--green)'}"></div>
+      <div class="briefing-item-content">
+        <div class="briefing-item-name">${c.name}</div>
+        <div class="briefing-item-detail">${fmtAddr(c)||'—'}</div>
+        ${gci?'<div class="briefing-item-action">Commission: '+fmt(gci)+'</div>':''}
+      </div>
+      <div class="briefing-item-meta"><span class="${cls}">${label}</span><br/><span style="font-size:10px;color:var(--text-faint);">${fmtD(c.coe)}</span></div>
+    </div>`;
+  }).join(''):`<div class="briefing-empty">No clients in escrow</div>`;
+
+  // Active pipeline summary
+  const pipelineItems=activeClients.slice(0,6);
+  document.getElementById('briefing-pipeline').innerHTML=pipelineItems.length?pipelineItems.map(c=>`<div class="briefing-item">
+    <div class="briefing-item-dot" style="background:${STAGE_COLORS[STAGES.indexOf(c.stage)]||'#888'}"></div>
+    <div class="briefing-item-content">
+      <div class="briefing-item-name">${c.name}</div>
+      <div class="briefing-item-detail">${stageBadge(c.stage)}</div>
+      ${c.next_action?'<div class="briefing-item-action">→ '+c.next_action+'</div>':''}
+    </div>
+    <div class="briefing-item-meta">${c.sale_price?fmtK(c.sale_price):''}</div>
+  </div>`).join(''):`<div class="briefing-empty">No active clients</div>`;
+
+  // Needs attention: clients with no next action or overdue COE
+  const needsAttention=activeClients.filter(c=>!c.next_action||(c.coe&&new Date(c.coe+'T12:00:00')<today&&c.stage!=='Closed'));
+  document.getElementById('briefing-attention').innerHTML=needsAttention.length?needsAttention.slice(0,5).map(c=>`<div class="briefing-item">
+    <div class="briefing-item-dot" style="background:var(--amber)"></div>
+    <div class="briefing-item-content">
+      <div class="briefing-item-name">${c.name}</div>
+      <div class="briefing-item-detail">${stageBadge(c.stage)}</div>
+      <div class="briefing-item-action">${!c.next_action?'⚠ No next action set':''}</div>
+    </div>
+  </div>`).join(''):`<div class="briefing-empty" style="color:var(--green)">✓ All clients have next actions</div>`;
+
+  // Funnel
+  const maxCount=Math.max(1,...STAGES.map(s=>activeClients.filter(c=>c.stage===s).length));
+  document.getElementById('briefing-funnel').innerHTML=STAGES.map((s,i)=>{
+    const count=activeClients.filter(c=>c.stage===s).length;
+    const h=Math.max(8,Math.round((count/maxCount)*80));
+    return`<div class="funnel-stage">
+      <div class="funnel-count" style="color:${STAGE_COLORS[i]}">${count}</div>
+      <div class="funnel-bar" style="height:${h}px;background:${STAGE_COLORS[i]}88;"></div>
+      <div class="funnel-label">${s.replace(' ','\n')}</div>
+    </div>`;
+  }).join('');
+
+  // Closed this month
+  document.getElementById('briefing-closed-month').innerHTML=thisMonthClosings.length?`<table style="width:100%"><thead><tr><th>Client</th><th>Address</th><th>Sale Price</th><th>Commission</th><th>COE</th></tr></thead><tbody>`+thisMonthClosings.map(c=>`<tr>
+    <td style="font-weight:500">${c.name}</td>
+    <td><div class="addr">${fmtAddr(c)}</div></td>
+    <td style="font-weight:500">${fmt(c.price||0)}</td>
+    <td style="color:var(--green);font-weight:500">${fmt(commAmt(c.price||0,c.commission||0))}</td>
+    <td style="font-size:12px">${fmtD(c.coe)}</td>
+  </tr>`).join('')+`</tbody></table>`:`<div class="briefing-empty">No closings recorded this month yet</div>`;
 }
 
 function render(){
@@ -855,19 +987,16 @@ function render(){
 function renderCharts(sc){
   if(stageChart)stageChart.destroy();
   stageChart=new Chart(document.getElementById('stage-chart').getContext('2d'),{type:'doughnut',data:{labels:STAGES,datasets:[{data:STAGES.map(s=>sc[s]),backgroundColor:STAGE_COLORS,borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12}}}}});
-
   if(gciChart)gciChart.destroy();
   const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const gciByMonth=new Array(12).fill(0);
   closings.forEach(c=>{if(c.coe){try{const m=new Date(c.coe+'T12:00:00').getMonth();gciByMonth[m]+=commAmt(c.price||0,c.commission||0);}catch(e){}}});
   gciChart=new Chart(document.getElementById('gci-chart').getContext('2d'),{type:'bar',data:{labels:months,datasets:[{label:'GCI',data:gciByMonth.map(v=>Math.round(v)),backgroundColor:'#c8602a99',borderColor:'#c8602a',borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fmtK(v)},grid:{color:'rgba(0,0,0,0.05)'}},x:{grid:{display:false}}}}});
-
   if(sourceChart)sourceChart.destroy();
   const activeSrc=clients.filter(c=>c.stage!=='Lost'&&c.stage!=='Closed');
   const srcCounts={};activeSrc.forEach(c=>{if(c.source)srcCounts[c.source]=(srcCounts[c.source]||0)+1;});
   const srcLabels=Object.keys(srcCounts);
   sourceChart=new Chart(document.getElementById('source-chart').getContext('2d'),{type:'pie',data:{labels:srcLabels.length?srcLabels:['No data'],datasets:[{data:srcLabels.length?srcLabels.map(s=>srcCounts[s]):[1],backgroundColor:srcLabels.length?srcLabels.map(s=>SRC_COLORS[s]||'#888'):['#e0e0e0'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:12}}}}});
-
   if(typeChart)typeChart.destroy();
   const buyers=clients.filter(c=>c.type==='buyer'&&c.stage!=='Lost').length;
   const sellers=clients.filter(c=>c.type==='seller'&&c.stage!=='Lost').length;
@@ -878,20 +1007,18 @@ function showTab(t){
   document.querySelectorAll('.section').forEach(el=>el.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
   document.getElementById('tab-'+t).classList.add('active');
-  document.querySelectorAll('.tab').forEach((el,i)=>{if(['dashboard','clients','closings','lost','netsheet','settings'][i]===t)el.classList.add('active');});
+  const tabNames=['briefing','dashboard','clients','closings','lost','netsheet','settings'];
+  document.querySelectorAll('.tab').forEach((el,i)=>{if(tabNames[i]===t)el.classList.add('active');});
+  if(t==='briefing')renderBriefing();
 }
 
 function openModal(){
-  document.getElementById('f-id').value='';
-  document.getElementById('f-prev-stage').value='';
+  document.getElementById('f-id').value='';document.getElementById('f-prev-stage').value='';
   document.getElementById('modal-title').textContent='Add new client';
   ['f-name','f-phone','f-street','f-city','f-next','f-price','f-commission','f-zip','f-coe'].forEach(i=>document.getElementById(i).value='');
-  document.getElementById('f-state').value='CA';
-  document.getElementById('f-type').value='buyer';
-  document.getElementById('f-stage').value='Lead Start';
-  document.getElementById('f-source').value='Referral';
-  document.getElementById('f-lost-reason').value='';
-  document.getElementById('lost-reason-section').style.display='none';
+  document.getElementById('f-state').value='CA';document.getElementById('f-type').value='buyer';
+  document.getElementById('f-stage').value='Lead Start';document.getElementById('f-source').value='Referral';
+  document.getElementById('f-lost-reason').value='';document.getElementById('lost-reason-section').style.display='none';
   document.getElementById('client-modal').classList.add('open');
 }
 function closeModal(){document.getElementById('client-modal').classList.remove('open');}
@@ -899,22 +1026,14 @@ function closeModal(){document.getElementById('client-modal').classList.remove('
 function editClient(id){
   const c=clients.find(x=>x.id===id);if(!c)return;
   document.getElementById('modal-title').textContent='Edit client';
-  document.getElementById('f-id').value=id;
-  document.getElementById('f-prev-stage').value=c.stage||'';
-  document.getElementById('f-name').value=c.name||'';
-  document.getElementById('f-phone').value=c.phone||'';
-  document.getElementById('f-street').value=c.street||'';
-  document.getElementById('f-city').value=c.city||'';
-  document.getElementById('f-state').value=c.state||'CA';
-  document.getElementById('f-zip').value=c.zip||'';
-  document.getElementById('f-type').value=c.type||'buyer';
-  document.getElementById('f-stage').value=c.stage||'Lead Start';
-  document.getElementById('f-source').value=c.source||'Referral';
-  document.getElementById('f-next').value=c.next_action||'';
-  document.getElementById('f-price').value=c.sale_price||'';
-  document.getElementById('f-commission').value=c.commission||'';
-  document.getElementById('f-coe').value=c.coe||'';
-  document.getElementById('f-lost-reason').value=c.lost_reason||'';
+  document.getElementById('f-id').value=id;document.getElementById('f-prev-stage').value=c.stage||'';
+  document.getElementById('f-name').value=c.name||'';document.getElementById('f-phone').value=c.phone||'';
+  document.getElementById('f-street').value=c.street||'';document.getElementById('f-city').value=c.city||'';
+  document.getElementById('f-state').value=c.state||'CA';document.getElementById('f-zip').value=c.zip||'';
+  document.getElementById('f-type').value=c.type||'buyer';document.getElementById('f-stage').value=c.stage||'Lead Start';
+  document.getElementById('f-source').value=c.source||'Referral';document.getElementById('f-next').value=c.next_action||'';
+  document.getElementById('f-price').value=c.sale_price||'';document.getElementById('f-commission').value=c.commission||'';
+  document.getElementById('f-coe').value=c.coe||'';document.getElementById('f-lost-reason').value=c.lost_reason||'';
   document.getElementById('lost-reason-section').style.display=c.stage==='Lost'?'block':'none';
   document.getElementById('client-modal').classList.add('open');
 }
@@ -946,58 +1065,24 @@ async function saveClient(){
     const property=[street,city,state,zip].filter(Boolean).join(', ');
     const source=document.getElementById('f-source').value;
     const lostReason=stage==='Lost'?document.getElementById('f-lost-reason').value:'';
-
-    const payload={
-      name,
-      phone:document.getElementById('f-phone').value.trim(),
-      street,city,state,zip,property,type,stage,source,
-      next_action:document.getElementById('f-next').value.trim(),
-      sale_price:salePrice,
-      commission,
-      coe,
-      lost_reason:lostReason,
-      prev_stage:stage==='Lost'?(prevStage||null):null,
-    };
-
+    const payload={name,phone:document.getElementById('f-phone').value.trim(),street,city,state,zip,property,type,stage,source,next_action:document.getElementById('f-next').value.trim(),sale_price:salePrice,commission,coe,lost_reason:lostReason,prev_stage:stage==='Lost'?(prevStage||null):null};
     let result;
-    if(eid){
-      result=await sb.from('clients').update(payload).eq('id',eid);
-    }else{
-      payload.added_date=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});
-      result=await sb.from('clients').insert(payload);
-    }
-
+    if(eid){result=await sb.from('clients').update(payload).eq('id',eid);}
+    else{payload.added_date=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});result=await sb.from('clients').insert(payload);}
     if(result.error){alert('Save error: '+result.error.message);btn.disabled=false;btn.textContent='Save client';return;}
-
-    // Auto-create closing when Closed
     if(stage==='Closed'&&salePrice){
       const{data:existingClosings}=await sb.from('closings').select('id').eq('name',name);
-      if(!existingClosings||existingClosings.length===0){
-        await sb.from('closings').insert({
-          name,street,city,state,zip,property,type,
-          price:salePrice,
-          commission:commission||0,
-          coe:coe||new Date().toISOString().split('T')[0],
-          source,
-        });
-      }
+      if(!existingClosings||existingClosings.length===0){await sb.from('closings').insert({name,street,city,state,zip,property,type,price:salePrice,commission:commission||0,coe:coe||new Date().toISOString().split('T')[0],source});}
     }
-
-    await loadAll();
-    closeModal();
-  }catch(e){
-    alert('Unexpected error: '+e.message);
-  }
+    await loadAll();closeModal();
+  }catch(e){alert('Unexpected error: '+e.message);}
   btn.disabled=false;btn.textContent='Save client';
 }
 
 function openClosingModal(){
-  document.getElementById('c-id').value='';
-  document.getElementById('closing-modal-title').textContent='Add closing';
+  document.getElementById('c-id').value='';document.getElementById('closing-modal-title').textContent='Add closing';
   ['c-name','c-street','c-city','c-zip','c-price','c-coe','c-commission'].forEach(i=>document.getElementById(i).value='');
-  document.getElementById('c-state').value='CA';
-  document.getElementById('c-type').value='seller';
-  document.getElementById('c-source').value='Referral';
+  document.getElementById('c-state').value='CA';document.getElementById('c-type').value='seller';document.getElementById('c-source').value='Referral';
   document.getElementById('closing-modal').classList.add('open');
 }
 function closeClosingModal(){document.getElementById('closing-modal').classList.remove('open');}
@@ -1005,16 +1090,11 @@ function closeClosingModal(){document.getElementById('closing-modal').classList.
 function editClosing(id){
   const c=closings.find(x=>x.id===id);if(!c)return;
   document.getElementById('closing-modal-title').textContent='Edit closing';
-  document.getElementById('c-id').value=id;
-  document.getElementById('c-name').value=c.name||'';
-  document.getElementById('c-street').value=c.street||'';
-  document.getElementById('c-city').value=c.city||'';
-  document.getElementById('c-state').value=c.state||'CA';
-  document.getElementById('c-zip').value=c.zip||'';
-  document.getElementById('c-type').value=c.type||'seller';
-  document.getElementById('c-price').value=c.price||'';
-  document.getElementById('c-commission').value=c.commission||'';
-  document.getElementById('c-coe').value=c.coe||'';
+  document.getElementById('c-id').value=id;document.getElementById('c-name').value=c.name||'';
+  document.getElementById('c-street').value=c.street||'';document.getElementById('c-city').value=c.city||'';
+  document.getElementById('c-state').value=c.state||'CA';document.getElementById('c-zip').value=c.zip||'';
+  document.getElementById('c-type').value=c.type||'seller';document.getElementById('c-price').value=c.price||'';
+  document.getElementById('c-commission').value=c.commission||'';document.getElementById('c-coe').value=c.coe||'';
   document.getElementById('c-source').value=c.source||'Referral';
   document.getElementById('closing-modal').classList.add('open');
 }
@@ -1029,26 +1109,15 @@ async function deleteClosing(id){
 async function saveClosing(){
   const name=document.getElementById('c-name').value.trim();
   if(!name){alert('Please enter a client name.');return;}
-  const btn=document.getElementById('save-closing-btn');
-  btn.disabled=true;btn.textContent='Saving...';
+  const btn=document.getElementById('save-closing-btn');btn.disabled=true;btn.textContent='Saving...';
   try{
     const eid=document.getElementById('c-id').value;
-    const street=document.getElementById('c-street').value.trim();
-    const city=document.getElementById('c-city').value.trim();
-    const state=document.getElementById('c-state').value.trim();
-    const zip=document.getElementById('c-zip').value.trim();
+    const street=document.getElementById('c-street').value.trim();const city=document.getElementById('c-city').value.trim();
+    const state=document.getElementById('c-state').value.trim();const zip=document.getElementById('c-zip').value.trim();
     const property=[street,city,state,zip].filter(Boolean).join(', ');
-    const payload={
-      name,street,city,state,zip,property,
-      type:document.getElementById('c-type').value,
-      price:parseFloat(document.getElementById('c-price').value)||0,
-      commission:parseFloat(document.getElementById('c-commission').value)||0,
-      coe:document.getElementById('c-coe').value||null,
-      source:document.getElementById('c-source').value,
-    };
+    const payload={name,street,city,state,zip,property,type:document.getElementById('c-type').value,price:parseFloat(document.getElementById('c-price').value)||0,commission:parseFloat(document.getElementById('c-commission').value)||0,coe:document.getElementById('c-coe').value||null,source:document.getElementById('c-source').value};
     let result;
-    if(eid){result=await sb.from('closings').update(payload).eq('id',eid);}
-    else{result=await sb.from('closings').insert(payload);}
+    if(eid){result=await sb.from('closings').update(payload).eq('id',eid);}else{result=await sb.from('closings').insert(payload);}
     if(result.error){alert('Save error: '+result.error.message);btn.disabled=false;btn.textContent='Save closing';return;}
     await loadClosings();render();closeClosingModal();
   }catch(e){alert('Unexpected error: '+e.message);}
@@ -1063,239 +1132,85 @@ document.getElementById('auth-password').addEventListener('keydown',e=>{if(e.key
 let nsDonutChart=null;
 
 function calcProratedTax(){
-  const price=gv('ns-price');
-  const taxRate=gv('ns-tax-rate')/100;
-  const coeVal=document.getElementById('ns-coe').value;
+  const price=gv('ns-price');const taxRate=gv('ns-tax-rate')/100;const coeVal=document.getElementById('ns-coe').value;
   if(!price||!coeVal)return 0;
-  try{
-    const coe=new Date(coeVal+'T12:00:00');
-    const yearStart=new Date(coe.getFullYear(),0,1);
-    const daysInYear=((coe.getFullYear()%4===0&&coe.getFullYear()%100!==0)||coe.getFullYear()%400===0)?366:365;
-    // Seller owes taxes from Jan 1 to closing date (WFG method)
-    const dayOfYear=Math.floor((coe-yearStart)/(1000*60*60*24))+1;
-    return price*taxRate*(dayOfYear/daysInYear);
-  }catch(e){return 0;}
+  try{const coe=new Date(coeVal+'T12:00:00');const yearStart=new Date(coe.getFullYear(),0,1);const daysInYear=((coe.getFullYear()%4===0&&coe.getFullYear()%100!==0)||coe.getFullYear()%400===0)?366:365;const dayOfYear=Math.floor((coe-yearStart)/(1000*60*60*24))+1;return price*taxRate*(dayOfYear/daysInYear);}catch(e){return 0;}
 }
 
 function setConcessionMode(mode){
-  const dollar=document.getElementById('concession-dollar-btn');
-  const pct=document.getElementById('concession-pct-btn');
-  const prefix=document.getElementById('concession-prefix');
-  const modeInput=document.getElementById('ns-concession-mode');
+  const dollar=document.getElementById('concession-dollar-btn');const pct=document.getElementById('concession-pct-btn');
+  const prefix=document.getElementById('concession-prefix');const modeInput=document.getElementById('ns-concession-mode');
   if(modeInput)modeInput.value=mode;
-  if(mode==='dollar'){
-    if(dollar){dollar.style.background='#c8602a';dollar.style.color='white';}
-    if(pct){pct.style.background='#ffffff';pct.style.color='#6b6760';}
-    if(prefix)prefix.textContent='$';
-  }else{
-    if(pct){pct.style.background='#c8602a';pct.style.color='white';}
-    if(dollar){dollar.style.background='#ffffff';dollar.style.color='#6b6760';}
-    if(prefix)prefix.textContent='%';
-  }
+  if(mode==='dollar'){if(dollar){dollar.style.background='#c8602a';dollar.style.color='white';}if(pct){pct.style.background='#ffffff';pct.style.color='#6b6760';}if(prefix)prefix.textContent='$';}
+  else{if(pct){pct.style.background='#c8602a';pct.style.color='white';}if(dollar){dollar.style.background='#ffffff';dollar.style.color='#6b6760';}if(prefix)prefix.textContent='%';}
   calcNet();
 }
 
 function calcNet(){
-  const price=gv('ns-price');
-  const payoff=gv('ns-payoff');
-  const heloc=gv('ns-heloc');
-  const listPct=gv('ns-list-pct');
-  const buyPct=gv('ns-buy-pct');
-  const concessionRaw=gv('ns-concession');
-  const concessionModeEl=document.getElementById('ns-concession-mode');
+  const price=gv('ns-price');const payoff=gv('ns-payoff');const heloc=gv('ns-heloc');
+  const listPct=gv('ns-list-pct');const buyPct=gv('ns-buy-pct');
+  const concessionRaw=gv('ns-concession');const concessionModeEl=document.getElementById('ns-concession-mode');
   const concession=concessionModeEl&&concessionModeEl.value==='pct'?price*(concessionRaw/100):concessionRaw;
-  // Homeowner's policy: $3.29 per $1,000 of sale price (WFG Kern rate)
-  let ownersPolicy=gv('ns-owners-policy');
-  const ownersPolicyEl=document.getElementById('ns-owners-policy');
-  if(price>0&&parseFloat(ownersPolicyEl.value||0)<500){
-    ownersPolicy=Math.round(price*0.00329);
-    ownersPolicyEl.value=ownersPolicy;
-  }
-  const escrow=gv('ns-escrow');
-  const docPrep=gv('ns-doc-prep');
-  const taxCert=gv('ns-tax-cert');
-  const proc593=gv('ns-593-proc');
-  // Transfer tax: $1.10 per $1,000 of sale price (Kern County rate)
-  let transfer=gv('ns-transfer');
-  const transferEl=document.getElementById('ns-transfer');
-  if(price>0&&parseFloat(transferEl.value||0)<100){
-    transfer=Math.round(price*0.0011*100)/100;
-    transferEl.value=transfer.toFixed(2);
-  }
-  const form593=gv('ns-593-form');
-  const recording=gv('ns-recording');
-  const notary=gv('ns-notary');
-  const hoa=gv('ns-hoa');
-  const warranty=gv('ns-warranty');
-  const staging=gv('ns-staging');
-  const repairs=gv('ns-repairs');
-  const interest=gv('ns-interest');
-  const other=gv('ns-other');
+  let ownersPolicy=gv('ns-owners-policy');const ownersPolicyEl=document.getElementById('ns-owners-policy');
+  if(price>0&&parseFloat(ownersPolicyEl.value||0)<500){ownersPolicy=Math.round(price*0.00329);ownersPolicyEl.value=ownersPolicy;}
+  const escrow=gv('ns-escrow');const docPrep=gv('ns-doc-prep');const taxCert=gv('ns-tax-cert');const proc593=gv('ns-593-proc');
+  let transfer=gv('ns-transfer');const transferEl=document.getElementById('ns-transfer');
+  if(price>0&&parseFloat(transferEl.value||0)<100){transfer=Math.round(price*0.0011*100)/100;transferEl.value=transfer.toFixed(2);}
+  const form593=gv('ns-593-form');const recording=gv('ns-recording');const notary=gv('ns-notary');
+  const hoa=gv('ns-hoa');const warranty=gv('ns-warranty');const staging=gv('ns-staging');
+  const repairs=gv('ns-repairs');const interest=gv('ns-interest');const other=gv('ns-other');
   const propTax=calcProratedTax();
-
-  const listComm=price*(listPct/100);
-  const buyComm=price*(buyPct/100);
-  const totalComm=listComm+buyComm+concession;
+  const listComm=price*(listPct/100);const buyComm=price*(buyPct/100);const totalComm=listComm+buyComm+concession;
   const titleTotal=ownersPolicy+escrow+docPrep+taxCert+proc593;
   const otherTotal=transfer+form593+recording+notary+hoa+warranty+staging+repairs+interest+other;
-  const totalDeductions=payoff+heloc+propTax+totalComm+titleTotal+otherTotal;
-  const net=price-totalDeductions;
-
+  const totalDeductions=payoff+heloc+propTax+totalComm+titleTotal+otherTotal;const net=price-totalDeductions;
   const set=(id,v,neg)=>{const el=document.getElementById(id);if(el)el.textContent=(neg?'— ':'')+fmt(v);};
-  set('r-price',price);
-  set('r-payoff',payoff,true);set('r-heloc',heloc,true);set('r-prop-tax',propTax,true);
+  set('r-price',price);set('r-payoff',payoff,true);set('r-heloc',heloc,true);set('r-prop-tax',propTax,true);
   set('r-total-comm',totalComm,true);set('r-list-comm',listComm,true);set('r-buy-comm',buyComm,true);set('r-concession',concession,true);
   set('r-title-total',titleTotal,true);set('r-owners-policy',ownersPolicy,true);set('r-escrow',escrow,true);set('r-doc-prep',docPrep,true);set('r-tax-cert',taxCert,true);set('r-593-proc',proc593,true);
   set('r-other-total',otherTotal,true);set('r-transfer',transfer,true);set('r-593-form',form593,true);set('r-recording',recording,true);set('r-notary',notary,true);
   set('r-hoa',hoa,true);set('r-warranty',warranty,true);set('r-staging',staging,true);set('r-repairs',repairs,true);set('r-interest',interest,true);set('r-other',other,true);
-
-  const netEl=document.getElementById('r-net');
-  const netDonut=document.getElementById('r-net-donut');
+  const netEl=document.getElementById('r-net');const netDonut=document.getElementById('r-net-donut');
   if(netEl){netEl.textContent=fmt(net);netEl.style.color=net<0?'var(--red)':'var(--accent)';}
   if(netDonut){netDonut.textContent=fmt(net);netDonut.style.color=net<0?'var(--red)':'var(--accent)';}
-
-  // Update donut chart
   if(nsDonutChart)nsDonutChart.destroy();
   const canvas=document.getElementById('ns-donut');
-  if(canvas&&price>0){
-    nsDonutChart=new Chart(canvas.getContext('2d'),{
-      type:'doughnut',
-      data:{
-        labels:['Net to seller','Loan balance','Commission','Title fees','Other fees','Prop tax'],
-        datasets:[{
-          data:[Math.max(0,net),payoff+heloc,totalComm,titleTotal,otherTotal,propTax].map(v=>Math.round(v)),
-          backgroundColor:['#1d7a4e','#2563a8','#c8602a','#5b3fa8','#b06b10','#a03060'],
-          borderWidth:3,borderColor:'#fff'
-        }]
-      },
-      options:{responsive:false,cutout:'70%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+fmt(ctx.raw)}}}}
-    });
-  }
+  if(canvas&&price>0){nsDonutChart=new Chart(canvas.getContext('2d'),{type:'doughnut',data:{labels:['Net to seller','Loan balance','Commission','Title fees','Other fees','Prop tax'],datasets:[{data:[Math.max(0,net),payoff+heloc,totalComm,titleTotal,otherTotal,propTax].map(v=>Math.round(v)),backgroundColor:['#1d7a4e','#2563a8','#c8602a','#5b3fa8','#b06b10','#a03060'],borderWidth:3,borderColor:'#fff'}]},options:{responsive:false,cutout:'70%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+fmt(ctx.raw)}}}}});}
 }
 
 function resetNet(){
-  // Clear personal fields
   ['ns-seller','ns-street','ns-city','ns-state','ns-zip','ns-price','ns-payoff','ns-heloc','ns-coe','ns-concession'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  // Set defaults
-  document.getElementById('ns-list-pct').value='2.5';
-  document.getElementById('ns-buy-pct').value='2.5';
-  document.getElementById('ns-tax-rate').value='1.48';
-  document.getElementById('ns-loan-type').value='Conventional';
-  // Kern County defaults
-  document.getElementById('ns-owners-policy').value='0'; // auto-calculated from price
-  document.getElementById('ns-escrow').value='842';
-  document.getElementById('ns-doc-prep').value='125';
-  document.getElementById('ns-tax-cert').value='55';
-  document.getElementById('ns-593-proc').value='45';
-  document.getElementById('ns-transfer').value='0'; // auto-calculated from price
-  document.getElementById('ns-593-form').value='45';
-  document.getElementById('ns-recording').value='75';
-  document.getElementById('ns-notary').value='200';
-  document.getElementById('ns-interest').value='62';
-  document.getElementById('ns-hoa').value='0';
-  document.getElementById('ns-warranty').value='0';
-  document.getElementById('ns-staging').value='0';
-  document.getElementById('ns-repairs').value='0';
-  document.getElementById('ns-other').value='0';
+  document.getElementById('ns-list-pct').value='2.5';document.getElementById('ns-buy-pct').value='2.5';
+  document.getElementById('ns-tax-rate').value='1.48';document.getElementById('ns-loan-type').value='Conventional';
+  document.getElementById('ns-owners-policy').value='0';document.getElementById('ns-escrow').value='842';
+  document.getElementById('ns-doc-prep').value='125';document.getElementById('ns-tax-cert').value='55';
+  document.getElementById('ns-593-proc').value='45';document.getElementById('ns-transfer').value='0';
+  document.getElementById('ns-593-form').value='45';document.getElementById('ns-recording').value='75';
+  document.getElementById('ns-notary').value='200';document.getElementById('ns-interest').value='62';
+  document.getElementById('ns-hoa').value='0';document.getElementById('ns-warranty').value='0';
+  document.getElementById('ns-staging').value='0';document.getElementById('ns-repairs').value='0';document.getElementById('ns-other').value='0';
   calcNet();
 }
 
 async function downloadPDF(){
-  const sellerName=document.getElementById('ns-seller').value||'';
-  const street=document.getElementById('ns-street').value||'';
-  const city=document.getElementById('ns-city').value||'';
-  const state=document.getElementById('ns-state').value||'CA';
-  const zip=document.getElementById('ns-zip').value||'';
-  const salesPrice=gv('ns-price');
-  const loanType=document.getElementById('ns-loan-type').value||'Conventional';
-  const coe=document.getElementById('ns-coe').value||'';
-  const coeFormatted=coe?new Date(coe+'T12:00:00').toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'}):'';
+  const sellerName=document.getElementById('ns-seller').value||'';const street=document.getElementById('ns-street').value||'';
+  const city=document.getElementById('ns-city').value||'';const state=document.getElementById('ns-state').value||'CA';const zip=document.getElementById('ns-zip').value||'';
+  const salesPrice=gv('ns-price');const loanType=document.getElementById('ns-loan-type').value||'Conventional';
+  const coe=document.getElementById('ns-coe').value||'';const coeFormatted=coe?new Date(coe+'T12:00:00').toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'}):'';
   const propAddress=[street,[city,state].filter(Boolean).join(', '),zip].filter(Boolean).join(' ');
   const date=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
-
-  // Fetch profile
   let agent={name:'',dre:'',phone:'',email:'',brokerage:'',brokerLic:'',address:'',website:'',logo:'',headshot:''};
-  if(currentUser){
-    const{data}=await sb.from('profiles').select('*').eq('user_id',currentUser.id).single();
-    if(data){
-      agent={
-        name:data.full_name||'',dre:data.dre||'',phone:data.phone||'',
-        email:currentUser.email||'',brokerage:data.brokerage||'',
-        brokerLic:data.broker_lic||'',address:data.address||'',
-        website:data.website||'',logo:data.logo||'',headshot:data.headshot||'',agentLogo:data.agent_logo||''
-      };
-    }
-  }
-
-  // Build fee rows
+  if(currentUser){const{data}=await sb.from('profiles').select('*').eq('user_id',currentUser.id).single();if(data){agent={name:data.full_name||'',dre:data.dre||'',phone:data.phone||'',email:currentUser.email||'',brokerage:data.brokerage||'',brokerLic:data.broker_lic||'',address:data.address||'',website:data.website||'',logo:data.logo||'',headshot:data.headshot||'',agentLogo:data.agent_logo||''};}}
   const feeRows=Array.from(document.getElementById('ns-results-card').querySelectorAll('.ns-line,.ns-divider,.ns-total')).map(el=>{
     if(el.classList.contains('ns-divider'))return '';
-    if(el.classList.contains('ns-total')){
-      const lbl=el.querySelector('.lbl');const val=el.querySelector('.val');
-      return '<tr style="background:#1a1917;color:white;"><td style="padding:8px 12px;font-weight:600;font-size:13px;">'+(lbl?lbl.textContent:'')+'</td><td style="padding:8px 12px;text-align:right;font-weight:600;font-size:15px;">'+(val?val.textContent:'')+'</td></tr>';
-    }
-    const lbl=el.querySelector('.lbl');const val=el.querySelector('.val');
-    const isIndent=el.style.paddingLeft==='1rem';
-    const isNeg=val&&val.classList.contains('neg');
-    const isBold=el.style.fontWeight==='500';
-    if(isBold){
-      return '<tr style="background:#333;color:white;"><td style="padding:6px 12px;font-weight:600;font-size:12px;">'+(lbl?lbl.textContent:'')+'</td><td style="padding:6px 12px;text-align:right;font-weight:600;font-size:12px;">'+(val?val.textContent:'')+'</td></tr>';
-    }
+    if(el.classList.contains('ns-total')){const lbl=el.querySelector('.lbl');const val=el.querySelector('.val');return '<tr style="background:#1a1917;color:white;"><td style="padding:8px 12px;font-weight:600;font-size:13px;">'+(lbl?lbl.textContent:'')+'</td><td style="padding:8px 12px;text-align:right;font-weight:600;font-size:15px;">'+(val?val.textContent:'')+'</td></tr>';}
+    const lbl=el.querySelector('.lbl');const val=el.querySelector('.val');const isIndent=el.style.paddingLeft==='1rem';const isNeg=val&&val.classList.contains('neg');const isBold=el.style.fontWeight==='500';
+    if(isBold){return '<tr style="background:#333;color:white;"><td style="padding:6px 12px;font-weight:600;font-size:12px;">'+(lbl?lbl.textContent:'')+'</td><td style="padding:6px 12px;text-align:right;font-weight:600;font-size:12px;">'+(val?val.textContent:'')+'</td></tr>';}
     return '<tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:4px '+(isIndent?'24':'10')+'px;font-size:11px;color:#333;">'+(lbl?lbl.textContent:'')+'</td><td style="padding:4px 10px;text-align:right;font-size:11px;color:'+(isNeg?'#c0392b':'#333')+';">'+(val?val.textContent:'')+'</td></tr>';
   }).join('');
-
-  // Agent footer
-  const agentFooter=`<table style="width:100%;margin-top:1rem;border-top:2px solid #1a1917;padding-top:0.75rem;">
-    <tr>
-      ${agent.headshot?`<td style="width:60px;vertical-align:top;padding-right:12px;"><img src="${agent.headshot}" style="width:55px;height:55px;border-radius:50%;object-fit:cover;" /></td>`:''}
-      <td style="vertical-align:top;">
-        ${agent.name?`<div style="font-weight:600;font-size:12px;">${agent.name}</div>`:''}
-        ${agent.dre?`<div style="font-size:10px;color:#555;">DRE # ${agent.dre}</div>`:''}
-        ${agent.phone?`<div style="font-size:10px;color:#555;">${agent.phone}</div>`:''}
-        ${agent.email?`<div style="font-size:10px;color:#555;">${agent.email}</div>`:''}
-        ${agent.brokerage?`<div style="font-size:10px;color:#555;">${agent.brokerage}${agent.brokerLic?' · Broker Lic # '+agent.brokerLic:''}</div>`:''}
-        ${agent.address?`<div style="font-size:10px;color:#555;">${agent.address}</div>`:''}
-      </td>
-      <td style="vertical-align:middle;text-align:right;">
-        <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;">
-          ${agent.agentLogo?`<img src="${agent.agentLogo}" style="max-height:40px;max-width:100px;object-fit:contain;" />`:''}
-          ${agent.logo?`<img src="${agent.logo}" style="max-height:40px;max-width:100px;object-fit:contain;" />`:''}
-        </div>
-      </td>
-    </tr>
-  </table>`;
-
-  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Seller Net Sheet</title>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:Arial,sans-serif;color:#1a1917;padding:1rem;font-size:11px;}
-    table{width:100%;border-collapse:collapse;}
-    @media print{@page{size:letter;margin:0.4in;}}
-  </style></head><body>
-  <div style="background:#1a1917;color:white;padding:10px 14px;margin-bottom:0.75rem;border-radius:4px;">
-    <div style="font-size:18px;font-weight:700;letter-spacing:0.02em;">Estimated Seller's Net Sheet</div>
-  </div>
-  <table style="margin-bottom:0.75rem;border:1px solid #ddd;border-radius:4px;overflow:hidden;">
-    <tr style="background:#f5f5f5;">
-      <td style="padding:6px 12px;"><strong>Seller:</strong> ${sellerName||'—'}</td>
-      <td style="padding:6px 12px;"><strong>Sales Price:</strong> ${salesPrice?'$'+Math.round(salesPrice).toLocaleString():'—'}</td>
-      <td style="padding:6px 12px;"><strong>Loan Type:</strong> ${loanType}</td>
-    </tr>
-    <tr>
-      <td style="padding:6px 12px;"><strong>Property:</strong> ${propAddress||'—'}</td>
-      <td style="padding:6px 12px;"><strong>Est. Closing Date:</strong> ${coeFormatted||'—'}</td>
-      <td style="padding:6px 12px;"><strong>Prepared:</strong> ${date}</td>
-    </tr>
-  </table>
-  <table>${feeRows}</table>
-  <p style="font-size:8px;color:#999;margin-top:0.5rem;">* Estimate only. Actual figures may vary. Kern County rate 1.48%. Consult your escrow officer for exact numbers.</p>
-  ${agentFooter}
-  </body></html>`;
-
-  const win=window.open('','_blank','width=750,height:950');
-  win.document.write(html);
-  win.document.close();
-  setTimeout(function(){win.focus();win.print();},700);
+  const agentFooter=`<table style="width:100%;margin-top:1rem;border-top:2px solid #1a1917;padding-top:0.75rem;"><tr>${agent.headshot?`<td style="width:60px;vertical-align:top;padding-right:12px;"><img src="${agent.headshot}" style="width:55px;height:55px;border-radius:50%;object-fit:cover;" /></td>`:''}<td style="vertical-align:top;">${agent.name?`<div style="font-weight:600;font-size:12px;">${agent.name}</div>`:''} ${agent.dre?`<div style="font-size:10px;color:#555;">DRE # ${agent.dre}</div>`:''} ${agent.phone?`<div style="font-size:10px;color:#555;">${agent.phone}</div>`:''} ${agent.email?`<div style="font-size:10px;color:#555;">${agent.email}</div>`:''} ${agent.brokerage?`<div style="font-size:10px;color:#555;">${agent.brokerage}${agent.brokerLic?' · Broker Lic # '+agent.brokerLic:''}</div>`:''} ${agent.address?`<div style="font-size:10px;color:#555;">${agent.address}</div>`:''}</td><td style="vertical-align:middle;text-align:right;"><div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;">${agent.agentLogo?`<img src="${agent.agentLogo}" style="max-height:40px;max-width:100px;object-fit:contain;" />`:''}${agent.logo?`<img src="${agent.logo}" style="max-height:40px;max-width:100px;object-fit:contain;" />`:''}</div></td></tr></table>`;
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Seller Net Sheet</title><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:Arial,sans-serif;color:#1a1917;padding:1rem;font-size:11px;}table{width:100%;border-collapse:collapse;}@media print{@page{size:letter;margin:0.4in;}}</style></head><body><div style="background:#1a1917;color:white;padding:10px 14px;margin-bottom:0.75rem;border-radius:4px;"><div style="font-size:18px;font-weight:700;letter-spacing:0.02em;">Estimated Seller's Net Sheet</div></div><table style="margin-bottom:0.75rem;border:1px solid #ddd;border-radius:4px;overflow:hidden;"><tr style="background:#f5f5f5;"><td style="padding:6px 12px;"><strong>Seller:</strong> ${sellerName||'—'}</td><td style="padding:6px 12px;"><strong>Sales Price:</strong> ${salesPrice?'$'+Math.round(salesPrice).toLocaleString():'—'}</td><td style="padding:6px 12px;"><strong>Loan Type:</strong> ${loanType}</td></tr><tr><td style="padding:6px 12px;"><strong>Property:</strong> ${propAddress||'—'}</td><td style="padding:6px 12px;"><strong>Est. Closing Date:</strong> ${coeFormatted||'—'}</td><td style="padding:6px 12px;"><strong>Prepared:</strong> ${date}</td></tr></table><table>${feeRows}</table><p style="font-size:8px;color:#999;margin-top:0.5rem;">* Estimate only. Actual figures may vary. Kern County rate 1.48%. Consult your escrow officer for exact numbers.</p>${agentFooter}</body></html>`;
+  const win=window.open('','_blank','width=750,height:950');win.document.write(html);win.document.close();setTimeout(function(){win.focus();win.print();},700);
 }
 setTimeout(function(){resetNet();},100);
 </script>
