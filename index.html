@@ -701,30 +701,31 @@
 </div>
 
 <!-- CLOSING MODAL -->
- <div class="modal">
- <h3 id="closing-modal-title">Add closing</h3>
- <input type="hidden" id="c-id" />
- <div class="form-grid">
- <div class="fg full"><label>Client name</label><input id="c-name" placeholder="Jane & John Doe" /></div>
- <div class="fg full"><label>Street address</label><input id="c-street" placeholder="123 Oak St" /></div>
- <div class="fg full" style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;">
- <div class="fg"><label>City</label><input id="c-city" placeholder="Bakersfield" /></div>
- <div class="fg"><label>State</label><input id="c-state" placeholder="CA" /></div>
- <div class="fg"><label>Zip</label><input id="c-zip" placeholder="93301" /></div>
- </div>
- <div class="fg"><label>Type</label><select id="c-type"><option value="seller">Seller</option><option value="buyer">Buyer</option></select></div>
- <div class="fg"><label>Sale Price ($)</label><input id="c-price" type="number" min="0" placeholder="450000" /></div>
- <div class="fg"><label>Commission (%)</label><input id="c-commission" type="number" min="0" step="0.1" placeholder="2.5" /></div>
- <div class="fg"><label>Close of Escrow</label><input id="c-coe" type="date" /></div>
- <div class="fg"><label>Source</label>
- <select id="c-source"><option>Referral</option><option>Past client</option><option>Zillow</option><option>Instagram</option><option>Open house</option><option>Sign call</option></select>
- </div>
- </div>
- <div class="modal-actions">
- <button class="btn" onclick="closeClosingModal()">Cancel</button>
- <button class="btn primary" id="save-closing-btn" onclick="saveClosing()">Save closing</button>
- </div>
- </div>
+<div class="modal-overlay" id="closing-modal">
+  <div class="modal">
+    <h3 id="closing-modal-title">Add closing</h3>
+    <input type="hidden" id="c-id" />
+    <div class="form-grid">
+      <div class="fg full"><label>Client name</label><input id="c-name" placeholder="Jane & John Doe" /></div>
+      <div class="fg full"><label>Street address</label><input id="c-street" placeholder="123 Oak St" /></div>
+      <div class="fg full" style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;">
+        <div class="fg"><label>City</label><input id="c-city" placeholder="Bakersfield" /></div>
+        <div class="fg"><label>State</label><input id="c-state" placeholder="CA" /></div>
+        <div class="fg"><label>Zip</label><input id="c-zip" placeholder="93301" /></div>
+      </div>
+      <div class="fg"><label>Type</label><select id="c-type"><option value="seller">Seller</option><option value="buyer">Buyer</option></select></div>
+      <div class="fg"><label>Sale Price ($)</label><input id="c-price" type="number" min="0" placeholder="450000" /></div>
+      <div class="fg"><label>Commission (%)</label><input id="c-commission" type="number" min="0" step="0.1" placeholder="2.5" /></div>
+      <div class="fg"><label>Close of Escrow</label><input id="c-coe" type="date" /></div>
+      <div class="fg"><label>Source</label>
+        <select id="c-source"><option>Referral</option><option>Past client</option><option>Zillow</option><option>Instagram</option><option>Open house</option><option>Sign call</option></select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeClosingModal()">Cancel</button>
+      <button class="btn primary" id="save-closing-btn" onclick="saveClosing()">Save closing</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -737,6 +738,8 @@ const SRC_COLORS={'Referral':'#5b3fa8','Past client':'#1d7a4e','Zillow':'#2563a8
 let currentUser=null,clients=[],closings=[];
 let stageChart=null,gciChart=null,sourceChart=null,typeChart=null;
 let authMode='login';
+let aiCurrentClientId=null,aiCurrentTab='text';
+let selectedLogMethod=null;
 
 function switchAuthTab(mode){authMode=mode;document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',['login','signup'][i]===mode));document.getElementById('auth-btn').textContent=mode==='login'?'Sign in':'Create account';document.getElementById('auth-error').style.display='none';document.getElementById('auth-success').style.display='none';}
 function showAuthError(msg){const el=document.getElementById('auth-error');el.textContent=msg;el.style.display='block';document.getElementById('auth-success').style.display='none';}
@@ -858,8 +861,6 @@ async function logContact(id){
 }
 
 // CONTACT LOG SYSTEM 
-let selectedLogMethod = null;
-
 function openLogModal(id) {
  const c = clients.find(x => x.id === id);
  if (!c) return;
@@ -1138,7 +1139,6 @@ async function downloadPDF(){
 setTimeout(function(){resetNet();},100);
 
 // AI MESSAGE GENERATOR 
-let aiCurrentClientId = null;
 let aiCurrentTab = 'text';
 
 function openAiModal(id) {
