@@ -878,32 +878,34 @@ function selectLogMethod(method) {
  if (btn) btn.classList.add('selected');
 }
 
+let isSavingLog = false;
 async function saveContactLog() {
- if (!selectedLogMethod) { alert('Please select how you contacted them.'); return; }
- const clientId = document.getElementById('log-client-id').value;
- const notes = document.getElementById('log-notes').value.trim();
- const today = new Date().toISOString().split('T')[0];
- const btn = document.getElementById('save-log-btn');
- btn.disabled = true; btn.textContent = 'Saving...';
- try {
- // Insert into contact_log table
- const { error: logError } = await sb.from('contact_log').insert({
- client_id: clientId,
- method: selectedLogMethod,
- notes: notes || null,
- contacted_at: today,
- });
- if (logError) throw logError;
- // Update last_contacted on the client record
- const { error: clientError } = await sb.from('clients').update({ last_contacted: today }).eq('id', clientId);
- if (clientError) throw clientError;
- await loadClients();
- render();
- closeLogModal();
- } catch(e) {
- alert('Error saving: ' + e.message);
- }
- btn.disabled = false; btn.textContent = 'Save Log';
+  if (isSavingLog) return;
+  if (!selectedLogMethod) { alert('Please select how you contacted them.'); return; }
+  const clientId = document.getElementById('log-client-id').value;
+  const notes = document.getElementById('log-notes').value.trim();
+  const today = new Date().toISOString().split('T')[0];
+  const btn = document.getElementById('save-log-btn');
+  isSavingLog = true;
+  btn.disabled = true; btn.textContent = 'Saving...';
+  try {
+    const { error: logError } = await sb.from('contact_log').insert({
+      client_id: clientId,
+      method: selectedLogMethod,
+      notes: notes || null,
+      contacted_at: today,
+    });
+    if (logError) throw logError;
+    const { error: clientError } = await sb.from('clients').update({ last_contacted: today }).eq('id', clientId);
+    if (clientError) throw clientError;
+    await loadClients();
+    render();
+    closeLogModal();
+  } catch(e) {
+    alert('Error saving: ' + e.message);
+  }
+  isSavingLog = false;
+  btn.disabled = false; btn.textContent = 'Save Log';
 }
 
 async function loadContactHistory(clientId) {
