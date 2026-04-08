@@ -1102,8 +1102,8 @@ async function saveClosing(){
 
 document.getElementById('client-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
 document.getElementById('closing-modal').addEventListener('click',function(e){if(e.target===this)closeClosingModal();});
-document.getElementById('auth-email').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('auth-password').focus();});
-document.getElementById('auth-password').addEventListener('keydown',e=>{if(e.key==='Enter')handleAuth();});
+document.getElementById('auth-email').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();document.getElementById('auth-password').focus();}});
+document.getElementById('auth-password').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();handleAuth();}});
 
 let nsDonutChart=null;
 
