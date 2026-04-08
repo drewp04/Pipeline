@@ -647,6 +647,10 @@
  <h3 id="log-modal-title">Log Contact</h3>
  <div style="font-size:12px;color:var(--text-faint);margin-bottom:1.25rem;" id="log-client-label">—</div>
  <input type="hidden" id="log-client-id" />
+ <div class="fg full" style="margin-bottom:1.25rem;">
+   <label>Date contacted</label>
+   <input type="date" id="log-date" style="font-family:var(--font-body);font-size:13px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--radius);background:var(--bg);color:var(--text);outline:none;width:100%;" />
+ </div>
  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-faint);margin-bottom:8px;">How did you reach out?</div>
  <div class="log-method-grid">
  <div class="log-method-btn" onclick="selectLogMethod('Phone')" id="log-method-Phone"><span>Phone</span></div>
@@ -841,6 +845,7 @@ function openLogModal(id) {
  document.getElementById('log-client-id').value = id;
  document.getElementById('log-client-label').textContent = c.name + ' · ' + (c.stage || 'Lead Start');
  document.getElementById('log-notes').value = '';
+ document.getElementById('log-date').value = new Date().toISOString().split('T')[0];
  document.getElementById('log-history-section').style.display = 'none';
  document.getElementById('log-history-toggle').textContent = 'Show ';
  document.querySelectorAll('.log-method-btn').forEach(b => b.classList.remove('selected'));
@@ -865,7 +870,7 @@ async function saveContactLog() {
   if (!selectedLogMethod) { alert('Please select how you contacted them.'); return; }
   const clientId = document.getElementById('log-client-id').value;
   const notes = document.getElementById('log-notes').value.trim();
-  const today = new Date().toISOString().split('T')[0];
+  const today = document.getElementById('log-date').value || new Date().toISOString().split('T')[0];
   const btn = document.getElementById('save-log-btn');
   isSavingLog = true;
   btn.disabled = true; btn.textContent = 'Saving...';
