@@ -641,11 +641,6 @@
  </div>
 </div>
 
-<!-- AI MESSAGE MODAL -->
-<div class="modal-overlay" id="ai-modal">
- <div class="modal ai-modal">
- <h3> AI Message Generator</h3>
- <div style="font-size:12px;color:var(--text-faint);margin-bottom:1rem;" id="ai-client-label">Drafting for: —</div>
  <div class="ai-tabs">
  <div class="ai-tab active" onclick="switchAiTab('text')" id="ai-tab-text"> Text Message</div>
  <div class="ai-tab" onclick="switchAiTab('email')" id="ai-tab-email"> Email</div>
@@ -662,8 +657,6 @@
  </div>
  <div class="modal-actions">
  <button class="btn" onclick="document.getElementById('ai-modal').classList.remove('open')">Close</button>
- <button class="btn" id="ai-copy-btn" onclick="copyAiMessage()" style="display:none;"> Copy</button>
- <button class="btn primary" id="ai-regen-btn" onclick="generateAiMessage()" style="display:none;">↻ Regenerate</button>
  </div>
  </div>
 </div>
@@ -738,7 +731,6 @@ const SRC_COLORS={'Referral':'#5b3fa8','Past client':'#1d7a4e','Zillow':'#2563a8
 let currentUser=null,clients=[],closings=[];
 let stageChart=null,gciChart=null,sourceChart=null,typeChart=null;
 let authMode='login';
-let aiCurrentClientId=null,aiCurrentTab='text';
 let selectedLogMethod=null;
 
 function switchAuthTab(mode){authMode=mode;document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',['login','signup'][i]===mode));document.getElementById('auth-btn').textContent=mode==='login'?'Sign in':'Create account';document.getElementById('auth-error').style.display='none';document.getElementById('auth-success').style.display='none';}
@@ -839,7 +831,7 @@ const fmtAddr=c=>{const parts=[c.street,[c.city,c.state].filter(Boolean).join(',
 function stageBadge(s){const m={'Lead Start':'b-lead','Nurture':'b-nurture','Buyers':'b-buyers','Pre-List':'b-prelist','Active Listings':'b-listings','In Escrow':'b-escrow','Closed':'b-closed','Lost':'b-lost'};return`<span class="badge ${m[s]||'b-lead'}">${s}</span>`;}
 function typeBadge(t){return`<span class="badge ${t==='buyer'?'b-buyer':'b-seller'}">${t==='buyer'?'Buyer':'Seller'}</span>`;}
 function srcHtml(s){return`<div class="src"><div class="dot" style="background:${SRC_COLORS[s]||'#888'}"></div>${s||'—'}</div>`;}
-function clientBtns(id){return`<div class="action-btns"><button class="btn sm ai" onclick="openAiModal('${id}')"> AI</button><button class="btn sm" onclick="logContact('${id}')" title="Log contact today"> Contacted</button><button class="btn sm" onclick="editClient('${id}')">Edit</button><button class="btn sm danger" onclick="deleteClient('${id}')">Delete</button></div>`;}
+function clientBtns(id){return`<div class="action-btns"><button class="btn sm" onclick="logContact('${id}')">Contacted</button><button class="btn sm" onclick="editClient('${id}')">Edit</button><button class="btn sm danger" onclick="deleteClient('${id}')">Delete</button></div>`;}
 function closingBtns(id){return`<div class="action-btns"><button class="btn sm" onclick="editClosing('${id}')">Edit</button><button class="btn sm danger" onclick="deleteClosing('${id}')">Delete</button></div>`;}
 
 function daysSince(dateStr){
@@ -1137,123 +1129,6 @@ async function downloadPDF(){
  const win=window.open('','_blank','width=750,height:950');win.document.write(html);win.document.close();setTimeout(function(){win.focus();win.print();},700);
 }
 setTimeout(function(){resetNet();},100);
-
-// AI MESSAGE GENERATOR 
-
-function openAiModal(id) {
- const c = clients.find(x => x.id === id);
- if (!c) return;
- aiCurrentClientId = id;
- aiCurrentTab = 'text';
- document.getElementById('ai-client-label').textContent = 'Drafting for: ' + c.name;
- document.getElementById('ai-result').style.display = 'none';
- document.getElementById('ai-loading').style.display = 'none';
- document.getElementById('ai-empty').style.display = 'block';
- document.getElementById('ai-copy-btn').style.display = 'none';
- document.getElementById('ai-regen-btn').style.display = 'none';
- document.querySelectorAll('.ai-tab').forEach(t => t.classList.remove('active'));
- document.getElementById('ai-tab-text').classList.add('active');
- document.getElementById('ai-modal').classList.add('open');
-}
-
-function switchAiTab(tab) {
- aiCurrentTab = tab;
- document.querySelectorAll('.ai-tab').forEach(t => t.classList.remove('active'));
- document.getElementById('ai-tab-' + tab).classList.add('active');
- generateAiMessage();
-}
-
-async function generateAiMessage() {
- const c = clients.find(x => x.id === aiCurrentClientId);
- if (!c) return;
-
- document.getElementById('ai-empty').style.display = 'none';
- document.getElementById('ai-result').style.display = 'none';
- document.getElementById('ai-loading').style.display = 'flex';
- document.getElementById('ai-copy-btn').style.display = 'none';
- document.getElementById('ai-regen-btn').style.display = 'none';
-
- const days = daysSince(c.last_contacted);
- const lastContactedStr = days === null ? 'never contacted yet' :
- days === 0 ? 'last contacted today' :
- days === 1 ? 'last contacted yesterday' :
- `last contacted ${days} days ago`;
-
- const clientContext = `
-Client name: ${c.name}
-Type: ${c.type || 'buyer'}
-Stage: ${c.stage || 'Lead Start'}
-Timeline: ${c.timeline || 'not specified'}
-Source: ${c.source || 'unknown'}
-${c.sale_price ? 'Price range: $' + Math.round(c.sale_price).toLocaleString() : ''}
-${c.notes ? 'Notes: ' + c.notes : ''}
-${c.next_action ? 'Next action: ' + c.next_action : ''}
-Follow-up status: ${lastContactedStr}
-`.trim();
-
- const prompts = {
- text: `You are Andrew Perez, a friendly real estate agent in Bakersfield/Kern County, CA. 
-Write a short, casual, warm text message to follow up with this client. 
-Keep it under 3 sentences. Sound natural, not salesy. Use their first name only.
-Don't use emojis unless very subtle. Match the energy of someone who genuinely cares.
-
-${clientContext}
-
-Write ONLY the text message, nothing else.`,
-
- email: `You are Andrew Perez, a friendly real estate agent in Bakersfield/Kern County, CA.
-Write a short, warm follow-up email to this client. 
-Subject line + body. Keep it conversational, 3-5 sentences max.
-Sound like a real person, not a template. Mention something specific based on their context.
-
-${clientContext}
-
-Write the subject line first (format: "Subject: ..."), then the email body. Nothing else.`,
-
- followup: `You are Andrew Perez, a friendly real estate agent in Bakersfield/Kern County, CA.
-Write a short phone call script/talking points for following up with this client.
-Format as: opening line, 2-3 key talking points, and a closing ask.
-Keep it natural and conversational, not scripted-sounding.
-
-${clientContext}
-
-Write ONLY the script/talking points, nothing else.`
- };
-
- try {
- const response = await fetch('https://xobgezpptkktdbowpdai.supabase.co/functions/v1/bright-worker', {
- method: 'POST',
- headers: {
- 'Content-Type': 'application/json',
- 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhvYmdlenBwdGtrdGRib3dwZGFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NTI1NjEsImV4cCI6MjA5MDIyODU2MX0.5kBh9IgL8WtLvS1oIxk8o4wqj-EcB0Ior4fpeAz7EnE',
- },
- body: JSON.stringify({ prompt: prompts[aiCurrentTab] })
- });
- const data = await response.json();
- const text = data.message || data.error || 'Could not generate message. Please try again.';
- document.getElementById('ai-result').textContent = text;
- document.getElementById('ai-result').style.display = 'block';
- document.getElementById('ai-copy-btn').style.display = 'inline-flex';
- document.getElementById('ai-regen-btn').style.display = 'inline-flex';
- } catch (e) {
- document.getElementById('ai-result').textContent = 'Error generating message: ' + e.message;
- document.getElementById('ai-result').style.display = 'block';
- }
- document.getElementById('ai-loading').style.display = 'none';
-}
-
-function copyAiMessage() {
- const text = document.getElementById('ai-result').textContent;
- navigator.clipboard.writeText(text).then(() => {
- const btn = document.getElementById('ai-copy-btn');
- btn.textContent = ' Copied!';
- setTimeout(() => btn.textContent = ' Copy', 2000);
- });
-}
-
-document.getElementById('ai-modal').addEventListener('click', function(e) {
- if (e.target === this) this.classList.remove('open');
-});
 </script>
 </body>
 </html>
