@@ -641,25 +641,6 @@
  </div>
 </div>
 
- <div class="ai-tabs">
- <div class="ai-tab active" onclick="switchAiTab('text')" id="ai-tab-text"> Text Message</div>
- <div class="ai-tab" onclick="switchAiTab('email')" id="ai-tab-email"> Email</div>
- <div class="ai-tab" onclick="switchAiTab('followup')" id="ai-tab-followup"> Follow-Up Script</div>
- </div>
- <div id="ai-output">
- <div class="ai-generating" id="ai-loading" style="display:none;">
- <div class="ai-spinner"></div> Generating message...
- </div>
- <div class="ai-result" id="ai-result" style="display:none;"></div>
- </div>
- <div id="ai-empty" style="padding:1rem;font-size:13px;color:var(--text-faint);text-align:center;">
- Click a message type above to generate a personalized message.
- </div>
- <div class="modal-actions">
- <button class="btn" onclick="document.getElementById('ai-modal').classList.remove('open')">Close</button>
- </div>
- </div>
-</div>
 <!-- CONTACT LOG MODAL -->
 <div class="modal-overlay" id="log-modal">
  <div class="modal" style="max-width:500px;">
